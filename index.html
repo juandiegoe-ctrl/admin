@@ -1,0 +1,2958 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ADMIN ESTONA</title>
+<style>
+:root{
+  --bg:#dce5ec;
+  --panel:#f8fbfd;
+  --ink:#1f2d38;
+  --muted:#657784;
+  --line:#c3d0da;
+  --soft:#eaf1f6;
+  --dark:#34546b;
+  --danger:#7c3f3f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.app{min-height:100vh;display:grid;grid-template-columns:255px 1fr}
+.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);padding:22px 17px}
+.logo{padding:5px 12px 12px}
+.logo img{width:142px;max-width:100%;height:auto}
+.portal-name{margin:0 12px 24px;padding-top:12px;border-top:1px solid #ddd;color:#343434;font-size:12px;font-weight:850;letter-spacing:1.9px}
+.nav{display:grid;gap:8px}
+.nav button{width:100%;min-height:44px;border:1px solid transparent;background:transparent;color:#414141;text-align:left;padding:11px 12px;border-radius:10px;font-weight:750}
+.nav button:hover{background:#f2f2f2}
+.nav button.active{background:#4a4a4a;color:#fff;border-color:#4a4a4a}
+.user{position:absolute;left:17px;right:17px;bottom:18px;padding:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:12px}
+.user small{display:block;color:var(--muted);margin-top:3px}
+.logout{width:100%;margin-top:10px;min-height:38px;border:1px solid #d1d1d1;border-radius:9px;background:#fff;color:#333}
+
+main{padding:28px 30px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}
+.top h1{margin:0;font-size:28px;letter-spacing:-.4px}
+.top p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.btn{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:800;background:#fff}
+.btn.primary{background:var(--dark);border-color:var(--dark);color:#fff}
+.btn.secondary{background:#f2f2f1;color:#333}
+.btn.danger{background:#fff;border-color:#d7bcbc;color:var(--danger)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:15px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px}
+.kpi small{display:block;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.45px}
+.kpi strong{display:block;margin-top:8px;font-size:22px}
+
+.filters{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px;gap:9px;margin-bottom:14px}
+.expense-filters{grid-template-columns:minmax(240px,1fr) 190px 150px 150px}
+.filters label,.field{display:grid;gap:5px}
+.filters span,.field label{font-size:10px;font-weight:800;color:var(--muted)}
+.filters input,.filters select,.field input,.field select,.field textarea{
+  width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink)
+}
+.field textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.full{grid-column:1/-1}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+
+.list-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:11px 12px;border-bottom:1px solid #e2e2e0;text-align:left;font-size:12px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--muted);background:#f5f5f3}
+tbody tr:hover td{background:#fafaf8}
+.money{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#ececeb;font-size:9px;font-weight:850}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-list{display:grid;gap:10px}
+.chart-row{display:grid;grid-template-columns:150px 1fr 100px;gap:9px;align-items:center}
+.bar{height:9px;background:#ececea;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:#555;border-radius:99px}
+
+.login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#d7d7d7;padding:24px}
+.login-card{width:min(500px,calc(100vw - 32px));padding:40px 42px 32px;border-radius:18px;background:#fff;border:1px solid #cfcfcd}
+.login-logo{text-align:center;margin-bottom:18px}
+.login-logo img{width:150px;max-width:100%}
+.login-card h1{text-align:center;font-size:22px;letter-spacing:2.2px;margin:0 0 26px}
+.login-field{display:grid;gap:7px;margin-bottom:17px}
+.login-field label{font-size:11px;font-weight:800;color:#555}
+.login-field input{width:100%;min-height:50px;border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.login-button{width:100%;min-height:50px;border:0;border-radius:10px;background:#444;color:#fff;font-weight:850}
+.login-error{min-height:18px;margin-top:12px;color:#7b3030;font-size:12px}
+.login-version{margin-top:20px;text-align:center;font-size:10px;color:#888}
+
+@media(max-width:900px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .dashboard-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  body{padding-bottom:78px}
+  .app{display:block}
+  .sidebar{
+    display:block;position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;height:auto;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:90;background:rgba(255,255,255,.98);
+    border:0;border-top:1px solid var(--line)
+  }
+  .sidebar .logo,.sidebar .portal-name,.sidebar .user{display:none}
+  .nav{grid-template-columns:repeat(2,1fr);gap:6px}
+  .nav button{text-align:center;justify-content:center;min-height:52px;padding:7px 4px;font-size:11px;background:#eee}
+  main{padding:16px 13px 22px}
+  .top{display:grid;grid-template-columns:1fr}
+  .top .btn{width:100%;min-height:48px}
+  .filters{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .kpis{grid-template-columns:1fr 1fr}
+  #expensesList .list-wrap{border:0;background:transparent;overflow:visible}
+  #expensesList table{display:block;min-width:0}
+  #expensesList thead{display:none}
+  #expensesList tbody{display:grid;gap:7px}
+  #expensesList tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:#fff}
+  #expensesList td{display:block;border:0;padding:0}
+  #expensesList td:nth-child(1){grid-column:1/-1;font-weight:850}
+  #expensesList td:nth-child(2){grid-column:1/-1;color:var(--muted)}
+  #expensesList td:nth-child(3),#expensesList td:nth-child(4),#expensesList td:nth-child(5){grid-column:1/2}
+  #expensesList td:nth-child(6){grid-column:2/3;grid-row:1/3;align-self:center;text-align:right;font-weight:850}
+  #expensesList td:nth-child(7){grid-column:1/-1;margin-top:6px}
+  .chart-row{grid-template-columns:100px 1fr 85px}
+}
+
+@media(max-width:760px){
+  #expensesList .list-wrap{
+    border:1px solid var(--line)!important;
+    background:#fff!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important
+  }
+  #expensesList table{
+    display:table!important;
+    min-width:1050px!important
+  }
+  #expensesList thead{display:table-header-group!important}
+  #expensesList tbody{display:table-row-group!important}
+  #expensesList tr{display:table-row!important;padding:0!important;border:0!important;background:transparent!important}
+  #expensesList td{display:table-cell!important;border-bottom:1px solid #e2e2e0!important;padding:10px!important}
+}
+
+
+.top-actions{
+  display:flex;
+  gap:8px;
+  align-items:center
+}
+.dashboard-admin-filters{
+  grid-template-columns:170px 170px minmax(190px,260px)!important;
+  justify-content:start
+}
+@media(max-width:760px){
+  .top-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr
+  }
+  .top-actions .btn{
+    width:100%
+  }
+  .dashboard-admin-filters{
+    grid-template-columns:1fr!important
+  }
+}
+
+
+.dashboard-period-filters{
+  display:grid!important;
+  grid-template-columns:165px 165px minmax(190px,240px) 190px auto!important;
+  align-items:end;
+  justify-content:start
+}
+.dashboard-period-filters .btn{
+  min-height:42px;
+  white-space:nowrap
+}
+.dashboard-single-chart{
+  margin-top:2px
+}
+.chart-title-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px
+}
+.chart-title-row h3{
+  margin:0
+}
+.chart-title-row p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:11px
+}
+@media(max-width:1050px){
+  .dashboard-period-filters{
+    grid-template-columns:1fr 1fr!important
+  }
+}
+@media(max-width:760px){
+  .dashboard-period-filters{
+    grid-template-columns:1fr!important
+  }
+  .dashboard-period-filters .btn{
+    width:100%
+  }
+}
+
+
+.shared-admin-filters{
+  display:grid!important;
+  grid-template-columns:175px 175px minmax(190px,260px) auto!important;
+  align-items:end;
+  justify-content:start
+}
+.expense-shared-filters{
+  display:grid!important;
+  grid-template-columns:minmax(250px,1fr) 175px 175px minmax(190px,240px)!important;
+}
+.shared-admin-filters input[type="date"],
+.expense-shared-filters input[type="date"]{
+  width:100%;
+}
+.consolidated-chart-row{
+  grid-template-columns:160px 1fr 185px!important
+}
+.chart-values{
+  display:grid;
+  justify-items:end;
+  gap:2px
+}
+.chart-values small{
+  color:var(--muted);
+  font-size:9px;
+  white-space:nowrap
+}
+@media(max-width:1050px){
+  .shared-admin-filters,
+  .expense-shared-filters{
+    grid-template-columns:1fr 1fr!important
+  }
+}
+@media(max-width:760px){
+  .shared-admin-filters,
+  .expense-shared-filters{
+    grid-template-columns:1fr!important
+  }
+  .shared-admin-filters .btn{
+    width:100%
+  }
+  .consolidated-chart-row{
+    grid-template-columns:105px 1fr 135px!important
+  }
+  .chart-values strong{
+    font-size:11px
+  }
+  .chart-values small{
+    font-size:8px
+  }
+}
+
+
+.expense-row{cursor:pointer}
+.expense-row:hover td{background:#f7f7f5!important}
+
+
+.expense-form-actions{
+  align-items:center
+}
+.expense-save-state{
+  margin-right:auto;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700
+}
+@media(max-width:760px){
+  .expense-form-actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr
+  }
+  .expense-save-state{
+    grid-column:1/-1;
+    margin-right:0
+  }
+}
+
+
+body{background:var(--bg)}
+.card,.panel{background:var(--panel)}
+input,select,textarea{background:#fbfdff;border-color:var(--line)}
+.btn.primary{background:var(--dark)}
+.bar{background:#dce7ee}
+.bar i{background:#52758d}
+
+
+.paid-check{
+  min-height:46px;
+  display:flex!important;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#f2f7fb;
+  cursor:pointer
+}
+.paid-check input{
+  width:20px!important;
+  height:20px;
+  min-height:0!important;
+  margin:0
+}
+.paid-check span{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.4px
+}
+.paid-badge{
+  background:#dbe9f3!important;
+  color:#28485d!important
+}
+.pending-badge{
+  background:#eef1f3!important;
+  color:#5f6d76!important
+}
+
+
+.invoice-filters{grid-template-columns:minmax(260px,1fr) 190px!important}
+.invoice-table{min-width:1050px}
+.invoice-actions{display:flex;gap:6px}
+.ignored-badge{background:#ececec!important;color:#777!important}
+@media(max-width:760px){.nav{grid-template-columns:repeat(3,1fr)!important}.invoice-filters{grid-template-columns:1fr!important}}
+
+
+.registered-badge{
+  background:#d9e6ee!important;
+  color:#294b61!important
+}
+.registered-note{
+  display:inline-block;
+  max-width:120px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+  line-height:1.2
+}
+.invoice-number-cell{
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.invoice-description-cell{
+  max-width:360px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:grid;
+  place-items:center;
+  padding:20px
+}
+.modal.hidden{display:none!important}
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(27,43,54,.42);
+  backdrop-filter:blur(3px)
+}
+.modal-card{
+  position:relative;
+  z-index:1;
+  width:min(760px,100%);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 22px 70px rgba(28,50,66,.24);
+  padding:22px
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  margin-bottom:18px
+}
+.modal-head h2{margin:0;font-size:21px}
+.modal-head p{margin:5px 0 0;color:var(--muted);font-size:11px}
+.icon-btn{
+  border:0;
+  background:var(--soft);
+  color:var(--ink);
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  font-size:22px;
+  cursor:pointer
+}
+.invoice-review-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:16px
+}
+.invoice-review-grid>div{
+  min-width:0;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fbfdff
+}
+.invoice-review-grid .wide{grid-column:1/-1}
+.invoice-review-grid small{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.5px
+}
+.invoice-review-grid strong{
+  display:block;
+  overflow-wrap:anywhere;
+  font-size:12px;
+  line-height:1.4
+}
+.modal-category{
+  display:grid;
+  gap:6px;
+  margin-top:4px
+}
+.modal-category span{
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.4px
+}
+.modal-category select{width:100%}
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:18px
+}
+@media(max-width:760px){
+  .invoice-review-grid{grid-template-columns:1fr}
+  .invoice-review-grid .wide{grid-column:auto}
+  .modal-card{padding:16px}
+  .modal-actions{display:grid;grid-template-columns:1fr 1fr}
+  .modal-actions .btn{width:100%}
+}
+
+
+.invoice-top-actions{display:flex;align-items:center;gap:8px}
+.auto-category{
+  margin-top:5px;
+  font-size:9px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.35px
+}
+@media(max-width:760px){
+  .invoice-top-actions{width:100%}
+  .invoice-top-actions .btn{width:100%}
+}
+
+
+.docs-eq-filters{grid-template-columns:repeat(4,minmax(0,1fr))}
+.doc-eq-card{width:min(980px,100%)}
+.doc-eq-layout{
+  display:grid;
+  grid-template-columns:minmax(280px,.9fr) minmax(360px,1.1fr);
+  gap:18px
+}
+.upload-box{
+  display:grid;
+  gap:8px;
+  padding:14px;
+  border:1px dashed var(--line);
+  border-radius:12px;
+  background:#fbfdff
+}
+.upload-box>span{
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.4px
+}
+.upload-box small{color:var(--muted);line-height:1.4}
+.doc-eq-preview-wrap{
+  margin-top:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  background:#f5f7f9;
+  max-height:430px
+}
+.doc-eq-preview-wrap img{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain
+}
+.doc-eq-form{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+.doc-eq-form label{
+  display:grid;
+  gap:6px
+}
+.doc-eq-form label>span{
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.35px
+}
+.doc-eq-form .wide{grid-column:1/-1}
+@media(max-width:820px){
+  .docs-eq-filters{grid-template-columns:1fr 1fr}
+  .doc-eq-layout{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .docs-eq-filters{grid-template-columns:1fr}
+  .doc-eq-form{grid-template-columns:1fr}
+  .doc-eq-form .wide{grid-column:auto}
+}
+
+
+/* Docs Eq · revisión e importación */
+body.modal-open{overflow:hidden}
+.doc-eq-import-card{
+  width:min(650px,calc(100vw - 32px));
+  padding:0;
+  overflow:hidden;
+  border-radius:20px;
+  background:#fff;
+  border:1px solid #d5dee5;
+  box-shadow:0 30px 90px rgba(27,43,54,.28);
+}
+.doc-eq-import-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  padding:24px 26px 20px;
+  border-bottom:1px solid #e1e8ed;
+}
+.doc-eq-import-head .eyebrow{
+  display:block;
+  margin-bottom:8px;
+  color:#687b88;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.2px;
+}
+.doc-eq-import-head h2{
+  margin:0;
+  font-size:24px;
+  line-height:1.1;
+  letter-spacing:-.35px;
+  color:#263a48;
+}
+.doc-eq-import-head p{
+  margin:7px 0 0;
+  color:#72828d;
+  font-size:12px;
+}
+.doc-eq-close{
+  flex:0 0 auto;
+  width:36px;
+  height:36px;
+  border:1px solid #d9e1e6;
+  border-radius:50%;
+  background:#f7f9fa;
+  color:#51636f;
+  font-size:23px;
+  line-height:1;
+}
+.doc-eq-import-summary{
+  display:grid;
+  grid-template-columns:1fr 1fr 1.4fr;
+  gap:1px;
+  margin:0;
+  background:#dfe7ec;
+  border-bottom:1px solid #dfe7ec;
+}
+.doc-eq-import-summary>div{
+  min-width:0;
+  padding:15px 18px;
+  background:#f6f9fb;
+}
+.doc-eq-import-summary small{
+  display:block;
+  margin-bottom:4px;
+  color:#788995;
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.55px;
+}
+.doc-eq-import-summary strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#263a48;
+  font-size:13px;
+}
+.doc-eq-import-fields{
+  display:grid;
+  gap:15px;
+  padding:23px 26px 8px;
+}
+.doc-eq-import-fields label{
+  display:grid;
+  gap:7px;
+}
+.doc-eq-import-fields label>span{
+  color:#5e707c;
+  font-size:10px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+.doc-eq-import-fields input,
+.doc-eq-import-fields textarea,
+.doc-eq-import-fields select{
+  width:100%;
+  border:1px solid #cbd7df;
+  border-radius:11px;
+  background:#fff;
+  color:#243744;
+  padding:11px 12px;
+  min-height:44px;
+  outline:none;
+  resize:vertical;
+}
+.doc-eq-import-fields textarea{min-height:84px;line-height:1.45}
+.doc-eq-import-fields input:focus,
+.doc-eq-import-fields textarea:focus,
+.doc-eq-import-fields select:focus{
+  border-color:#7f9bad;
+  box-shadow:0 0 0 3px rgba(88,122,144,.10);
+}
+.doc-eq-import-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  padding:17px 26px 24px;
+}
+.doc-eq-import-actions .btn{
+  min-height:43px;
+  padding-left:18px;
+  padding-right:18px;
+}
+.doc-eq-import-submit{min-width:165px}
+@media(max-width:620px){
+  .doc-eq-import-head{padding:20px 18px 17px}
+  .doc-eq-import-head h2{font-size:21px}
+  .doc-eq-import-summary{grid-template-columns:1fr 1fr}
+  .doc-eq-import-summary .wide-summary{grid-column:1/-1}
+  .doc-eq-import-fields{padding:20px 18px 7px}
+  .doc-eq-import-actions{padding:15px 18px 20px;display:grid;grid-template-columns:1fr 1fr}
+  .doc-eq-import-actions .btn{width:100%}
+}
+
+
+/* =========================================================
+   ESTONA ADMIN · DESIGN V3
+   White / Apple-inspired / approved dashboard direction
+   Functional logic intentionally untouched.
+   ========================================================= */
+:root{
+  --ui-bg:#ffffff;
+  --ui-panel:#ffffff;
+  --ui-soft:#f7f7f8;
+  --ui-soft-2:#f2f2f4;
+  --ui-text:#161617;
+  --ui-muted:#6e6e73;
+  --ui-line:#e7e7ea;
+  --ui-line-strong:#dddddf;
+  --ui-black:#111111;
+  --ui-blue:#2878d8;
+  --ui-radius:14px;
+  --ui-shadow:none;
+}
+html,body{
+  background:#fff!important;
+  color:var(--ui-text)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;
+}
+body{letter-spacing:-.01em}
+*{scrollbar-color:#c9c9cd transparent}
+.app{
+  grid-template-columns:230px 1fr!important;
+  min-height:100vh;
+  background:#fff!important;
+}
+.sidebar{
+  position:sticky!important;
+  top:0!important;
+  height:100vh!important;
+  background:#fff!important;
+  border-right:1px solid var(--ui-line)!important;
+  padding:24px 18px!important;
+  box-shadow:none!important;
+}
+.logo{
+  padding:4px 20px 12px!important;
+}
+.logo img{
+  width:150px!important;
+  max-width:100%!important;
+  height:auto!important;
+  filter:none!important;
+}
+.portal-name{
+  margin:2px 20px 34px!important;
+  padding-top:0!important;
+  border-top:0!important;
+  color:#111!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  letter-spacing:2.2px!important;
+}
+.nav{
+  display:grid!important;
+  gap:6px!important;
+}
+.nav button{
+  width:100%!important;
+  min-height:46px!important;
+  border:0!important;
+  background:transparent!important;
+  color:#222!important;
+  text-align:left!important;
+  padding:0 14px!important;
+  border-radius:10px!important;
+  font-weight:600!important;
+  font-size:13px!important;
+  box-shadow:none!important;
+}
+.nav button:hover{
+  background:#f5f5f6!important;
+}
+.nav button.active{
+  background:#f2f2f3!important;
+  color:#111!important;
+  border:0!important;
+}
+.user{
+  position:absolute!important;
+  left:18px!important;
+  right:18px!important;
+  bottom:18px!important;
+  padding:14px!important;
+  background:transparent!important;
+  border:0!important;
+  border-top:1px solid var(--ui-line)!important;
+  border-radius:0!important;
+}
+.user strong{
+  font-size:12px!important;
+  color:#222!important;
+}
+.user small{
+  color:var(--ui-muted)!important;
+  font-size:10px!important;
+}
+.logout{
+  margin-top:9px!important;
+  min-height:34px!important;
+  border:1px solid var(--ui-line)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#444!important;
+  font-size:11px!important;
+}
+main{
+  padding:30px 34px 44px!important;
+  min-width:0!important;
+  background:#fff!important;
+}
+.top,.view-head{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  gap:18px!important;
+  margin-bottom:26px!important;
+}
+.top h1,.view-head h1{
+  margin:0!important;
+  font-size:25px!important;
+  line-height:1.1!important;
+  font-weight:700!important;
+  letter-spacing:-.04em!important;
+  color:#111!important;
+}
+.top p,.view-head p{
+  margin:7px 0 0!important;
+  color:var(--ui-muted)!important;
+  font-size:12px!important;
+}
+.top-actions,.invoice-top-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+}
+.btn{
+  border:1px solid var(--ui-line-strong)!important;
+  border-radius:9px!important;
+  padding:9px 13px!important;
+  min-height:38px!important;
+  font-weight:650!important;
+  font-size:12px!important;
+  background:#fff!important;
+  color:#222!important;
+  box-shadow:none!important;
+}
+.btn.primary{
+  background:#111!important;
+  border-color:#111!important;
+  color:#fff!important;
+}
+.btn.primary:hover{
+  background:#252525!important;
+  transform:none!important;
+}
+.btn.secondary{
+  background:#fff!important;
+  color:#222!important;
+}
+.btn.danger{
+  background:#fff!important;
+  color:#8d3333!important;
+  border-color:#e7caca!important;
+}
+
+/* Dashboard KPIs: no boxes */
+.kpis{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:24px 34px!important;
+  margin:18px 0 34px!important;
+}
+.kpi{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  min-height:68px!important;
+}
+.kpi small{
+  display:block!important;
+  color:#66717b!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  text-transform:uppercase!important;
+  letter-spacing:.75px!important;
+  margin-bottom:8px!important;
+}
+.kpi strong{
+  display:block!important;
+  margin:0!important;
+  font-size:24px!important;
+  line-height:1.05!important;
+  font-weight:700!important;
+  color:#151515!important;
+  letter-spacing:-.035em!important;
+}
+
+/* Main cards / data blocks */
+.card{
+  background:#fff!important;
+  border:1px solid var(--ui-line)!important;
+  border-radius:14px!important;
+  padding:20px!important;
+  box-shadow:none!important;
+}
+.dashboard-single-chart{
+  margin-top:18px!important;
+}
+.chart-title-row h3,
+.card h3{
+  font-size:15px!important;
+  font-weight:700!important;
+  letter-spacing:-.02em!important;
+}
+.chart-title-row p{
+  font-size:10px!important;
+  color:var(--ui-muted)!important;
+}
+
+/* Filters: light and unobtrusive */
+.filters{
+  gap:9px!important;
+  margin-bottom:18px!important;
+}
+.filters label,.field{
+  gap:6px!important;
+}
+.filters span,.field label{
+  font-size:9px!important;
+  font-weight:750!important;
+  color:#6e7780!important;
+  text-transform:uppercase!important;
+  letter-spacing:.45px!important;
+}
+.filters input,.filters select,
+.field input,.field select,.field textarea,
+input,select,textarea{
+  background:#fff!important;
+  border:1px solid #dcdde1!important;
+  border-radius:9px!important;
+  min-height:40px!important;
+  color:#222!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#9ca3aa!important;
+  box-shadow:0 0 0 3px rgba(0,0,0,.035)!important;
+}
+
+/* Tables */
+.list-wrap{
+  background:#fff!important;
+  border:1px solid var(--ui-line)!important;
+  border-radius:14px!important;
+  overflow:auto!important;
+}
+table{
+  width:100%!important;
+  border-collapse:separate!important;
+  border-spacing:0!important;
+  background:#fff!important;
+}
+thead th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:#fbfbfc!important;
+  color:#69737d!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.55px!important;
+  text-transform:uppercase!important;
+  border-bottom:1px solid var(--ui-line)!important;
+  padding:12px 14px!important;
+}
+tbody td{
+  padding:12px 14px!important;
+  border-bottom:1px solid #eeeeef!important;
+  font-size:12px!important;
+  color:#222!important;
+  background:#fff!important;
+}
+tbody tr:last-child td{
+  border-bottom:0!important;
+}
+tbody tr:hover td{
+  background:#fafafa!important;
+}
+.money{
+  font-variant-numeric:tabular-nums;
+}
+
+/* Status pills */
+.badge{
+  border-radius:999px!important;
+  padding:5px 8px!important;
+  font-size:9px!important;
+  font-weight:750!important;
+  letter-spacing:.2px!important;
+}
+.paid-badge{
+  background:#eaf4ed!important;
+  color:#2f6d42!important;
+}
+.pending-badge{
+  background:#f2f2f3!important;
+  color:#666!important;
+}
+.ignored-badge{
+  background:#f4eeee!important;
+  color:#7c5b5b!important;
+}
+.registered-badge{
+  background:#eef3f8!important;
+  color:#49647a!important;
+}
+.auto-category{
+  margin-top:5px!important;
+  font-size:8px!important;
+  color:#777!important;
+}
+
+/* Charts: flatter, cleaner */
+.chart-list{
+  gap:10px!important;
+}
+.chart-row{
+  padding:9px 0!important;
+}
+.chart-bar-track{
+  background:#eeeeef!important;
+  border-radius:999px!important;
+}
+.chart-bar{
+  border-radius:999px!important;
+}
+
+/* Docs Eq */
+.docs-eq-filters{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+#docsEqKpis{
+  margin-top:6px!important;
+}
+#docsEqList .list-wrap{
+  margin-top:4px!important;
+}
+
+/* Forms remain boxed because they are data-entry surfaces */
+#expenseForm{
+  background:#fff!important;
+  border:1px solid var(--ui-line)!important;
+  border-radius:14px!important;
+  padding:20px!important;
+}
+.doc-eq-card{
+  width:min(900px,100%)!important;
+}
+
+/* Modals */
+.modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:20px!important;
+}
+.modal.hidden{display:none!important}
+.modal-backdrop{
+  position:absolute!important;
+  inset:0!important;
+  background:rgba(0,0,0,.24)!important;
+  backdrop-filter:blur(4px)!important;
+  -webkit-backdrop-filter:blur(4px)!important;
+}
+.modal-card,.doc-eq-import-card{
+  position:relative!important;
+  z-index:1!important;
+  background:#fff!important;
+  border:1px solid var(--ui-line)!important;
+  border-radius:16px!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.16)!important;
+}
+.doc-eq-import-head{
+  border-bottom:1px solid var(--ui-line)!important;
+}
+.doc-eq-import-head .eyebrow{
+  color:#7b848c!important;
+}
+.doc-eq-import-summary{
+  background:#fff!important;
+}
+.doc-eq-import-summary>div{
+  background:#fafafa!important;
+}
+.doc-eq-import-actions{
+  border-top:0!important;
+}
+
+/* Login */
+.login-screen{
+  background:#fff!important;
+}
+.login-card{
+  background:#fff!important;
+  border:1px solid var(--ui-line)!important;
+  box-shadow:0 20px 70px rgba(0,0,0,.08)!important;
+  border-radius:18px!important;
+}
+
+/* Scroll */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  background:#c9c9cc;
+  border:3px solid transparent;
+  background-clip:padding-box;
+  border-radius:999px;
+}
+
+/* Responsive */
+@media(max-width:1100px){
+  .app{grid-template-columns:210px 1fr!important}
+  main{padding:26px 24px 40px!important}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:820px){
+  .app{display:block!important}
+  .sidebar{
+    position:relative!important;
+    height:auto!important;
+    border-right:0!important;
+    border-bottom:1px solid var(--ui-line)!important;
+  }
+  .user{position:static!important;margin-top:12px!important}
+  main{padding:22px 16px 34px!important}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .docs-eq-filters{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr!important;gap:20px!important}
+  .kpi strong{font-size:20px!important}
+  .docs-eq-filters{grid-template-columns:1fr!important}
+}
+
+
+/* Gastos · edición directa en fila */
+.expense-row{cursor:default}
+.expense-row:not(.expense-row-editing){cursor:cell}
+.expense-row:not(.expense-row-editing):hover td{
+  background:#fafafa!important;
+}
+.expense-row-editing td{
+  background:#f8fafb!important;
+  padding:7px 7px!important;
+  vertical-align:top!important;
+}
+.inline-expense-input{
+  width:100%!important;
+  min-width:90px!important;
+  min-height:36px!important;
+  padding:7px 8px!important;
+  border:1px solid #cfd3d7!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  font-size:11px!important;
+  color:#1f1f1f!important;
+  box-shadow:none!important;
+}
+.inline-expense-input:focus{
+  border-color:#80868b!important;
+  box-shadow:0 0 0 3px rgba(0,0,0,.04)!important;
+}
+.inline-description{
+  min-width:190px!important;
+  resize:vertical!important;
+  line-height:1.3!important;
+}
+.inline-provider{min-width:150px!important}
+.inline-nit{min-width:105px!important}
+.inline-date{min-width:125px!important}
+.inline-number{min-width:105px!important;text-align:right}
+.inline-status{min-width:92px!important}
+.inline-expense-actions{
+  display:grid;
+  gap:5px;
+  min-width:84px;
+}
+.inline-expense-actions .btn{
+  width:100%!important;
+  min-height:34px!important;
+  padding:6px 9px!important;
+  font-size:10px!important;
+}
+
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <form id="loginForm" class="login-card">
+    <div class="login-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAnCAYAAADadbxDAAABQmlDQ1BJQ0MgUHJvZmlsZQAAKJF9kM1Kw0AUhU9qpUUKihRXCsF1lFj/1rULERRKVVB3yTSmQhvHaUQE9271Adz5EFI3PoA7QVB8ArdCFbTEM42aquiFO/fjzJk7lwukso6U9TSARhCqyuKCubG5ZWYekUUKeRiYd0RTFsvlZVrwWb9H+5Y+xs2E7vX7/t8YqHpNwfrGtIVUIWBY5PJBKDUfkfOKQ5FPNPsxn2t2Y77oetYqJfI1eUjUnCr5gWy5Pbrfw436vviYQU+f84L1Vd2HOYoV7MDkuYuAFLKqP/wzXX+JDolDKLp91PjCRJGKRB0eeYl9BCZhkQuwmXN6zz/3l2iqAMw+86upRHOHgdY9MHKcaOOnwKANXIbSUc7XVo12urk9XYg5p4D+lyh6GgMyLaCjouj1LIo63GHfHXC19w5gSVuQ6WR1QgAAAFZlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA5KGAAcAAAASAAAARKACAAQAAAABAAAAdqADAAQAAAABAAAAJwAAAABBU0NJSQAAAFNjcmVlbnNob3T1nKcTAAAB1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4zOTwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj4xMTg8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpVc2VyQ29tbWVudD5TY3JlZW5zaG90PC9leGlmOlVzZXJDb21tZW50PgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KwC0WEAAAD05JREFUeAHtmWfMVMUaxwdEsPceCxps2DECNxJDbChib1EBeywhyBexQAxG1BA1tgQSIRIVDMEK9hZj771/UIjGAqKAIsXC3Of3h/+5w97dd1/1i77ZSc6ec+Y8vc0zs51yjNQaHc4CnTucRi2FZIGWYztoILQc23JsB7VAB1WrlbEtx3ZQC3RQtVoZ23JsB7VAB1WrlbEtx3ZQC3RQtRpm7B9//CGVly9fXqnO3E8//VS9L1iwIC1evDgtWbJEc7x7gPfbb7/5NS1atEjPJf6cOXOSaf7666/6Pm/evP/DYeLHH39Mpg/dZcuW6bKc0Od0dOHChZU84DFn+eBtPnwDdunSpTxKD5+uAgd9+KCfbfDzzz9rHnrM8934IhI/vJsHMkPLult+8zEO9ObOnVvhff/99/pk+0HPMpT2M369e6dgUvesGGZrrLFG6tSpk/AQaoMNNtDzu+++m+6666704osvShgUXnvttdM+++yTzjvvvLTHHnukbt26pd9//z2tueaaEqpz585ScJ111knfffdduu2229Jrr72WZs2alX755Rfh9+jRIx1++OHplFNOEW/4o8jrr7+eLr/8chnTRoOeleWZa6211kpLFi9Jy/PydNxxx6WRI0em9ddfXzIj47rrritHv/POO+n2229Pn332mfhDE9123nnndOSRR6ajjz66wsO40AYG4/Nt9dVXF+/zzz8/nXvuucm0YYRMwJ999tnplVdekR6HHHJIGjt2rPCAwZZvvPGGvgPz1VdfSbcuXbpIB/Q48MAD00knnZT23HNPUPSdeUbJTxP1fnBsvRGRl8Mx+hRZUYFce+21ORxAMORwZt5www31zHsYUVcoK3hohKI5ol/vPH/xxRd5//33z2Fk4YPHFQGQQ/C8ySab5I022iiPHj264v/QzIcqGGCB69q1q3Dgz7PpcIf2kCFDxDOyModT9ByOyRdeeKF4ABfBV+FFEOkZnfbee+8MTw/sAI233367ggd/q622ys8++6zArCO2ikDNEQA5HCX4gw8+OCMH+kdQ58mTJ69Cp5SdZ2yBPLvvvrtg7QfzgE6zQQQ3HAiIc7gYl1xyiYxWMl9vvfVyZKEEKQW0c8GL0sItR/mSwiUcz6WBeSdAhg4dKmOA98gjj6xiCJQmAEo6ZYDhnDPPPBPUKjhw6oknnljhbLnlltUzgWBa6MMz36+//nrR8E9kl/gSSJHhgiMIouRWwYMTsFdkvvTCSVGFTELyPP7445XNCFLsZ/7YopSH4Hn55ZczAeOrItbGQ5uOBS/SXugzZsyolEEQopHMJQMuuuiivNNOO1UZa0HvvPNO4UY51Z2I9zcU6d69e44Sm2+55ZZMIOyyyy5SECeR2QyU+fbbb/PUKVPzo48+mpGDC2M5I3bcccd8zz336DuZNn36dGWXIztKn+jbeAQOzwRHlLrcu3dvyeLvzt5tttkmR8mUHGTLBx98oGoBHDB2QCwdgvnhhx+qJDjssMPEA7jjjz9e3105CISeu/ZUxUIWyxBLWN5iiy2ExzxBAS/wrQuB42cRbfDT0LEWwnhR88XEmdG3b9/8+eef+7OeY00QDAZH6VhzK0URBuc4O61wNFCiQZTjwAkTJuSrrrqqossDRkUhlyTmhg8fnp1dffr0qTKGb64whsfZzjA7FfmfeeYZ4VEmv/76a1Uk02Q5sFGhCcx7772n4DUM3+3cG264ATBlL/djjz1WuqIvjkEWl1LkizU+33fffXn27NmAa1DRCFBKN7R9bbfddnnWrFmCcaKtwGj829CxCEFkMT755JMqeigdGOnjjz/WNwSmZBuOKEcg4DbddNP86aefVg7BsXyz0QiSc845J7/00kvC5wcDMlCebGXYIAQb/KgAZ511VrW27rXXXirzpdJkKcEEPDzgCz8MjYzROIl2SR/8aLgqXcEha9CB8fzzz8ux0KDy8M2OhTYVaf78+YIdNGhQtTwdc8wxVbDxMRrTVbIOh9rWfKcyOIGQAXu/+eabCj6+t2d0CcS6I9aRxBUGTmF4bRlCCXVkm2++efrwww/V2UU5U1cbzESHjhE8tgNcdL5RpvWt73/6po033jhFyVIXDO1JkyaliNK02267paOOOiqdfPLJKTJCHSTdJXShx3A3ihx04auttprm4RNVQt0oE7yH8dXRh2PTq6++KjhvH2L9lkx0uZtttpnoRxClcFaig73jjjtEOwJDeLEmqmPu1rWb7MA89E899dT02GOPySbh0BQOrLpsZEM/BvICDx58eKYThs8LL7ygbRO7D/TcdtttU2SoYKOqiQb6sJPYd999BQttbNPmaMv7LsdXXnmlIp7yGcSUjeVayZzXA55DcK1/zI0ZM0YsQjiVvWj7q26YaIcOdMHholm45pprqiwtsxBCZC8Xazu8KPt0j2QnwzI728nuCCbBAh/Gyw888EDVpQqp5oclhAYMWO7oAD2aJ2RkDlrPPfdcjsAUnPUfMGCAqJ1wwgkVzwiAVTL2uuuu0/qO/tCzzXjnmeWCisczF3Lcf//9NVK2/drQ7USW929RUrW/IgKJKqKL7x5EejnIHi4iiywJY1f72VGjRqVoltL222+vbGTzTlaFs0SXbI4tVbrssstEksx0pjEBbzK3vQMZoMGIkiaZoEFVgG6YR9+Qw7IuW7pMVYgMY48dThMctMgi5hhRPlN02tr7QjOcpL3p1VdfLTnDQYLjTAC7Me6eene66aabpC+80TuWJlWQaJyUrcBhe3CwI7QtJzL5GbhGo2EphgAGhDHKUA4iinTHQCNGjJAiONhORgGUJxA4WIDGwIEDJSBGwxCxjUgRzWnw4MEpmof04IMPJg4MvvzyS5UdjBhZmqZMmaLDDso4dMqBos2GlccwlH9KGXIiI+Uz1kA9Qws9MST36MbTgoUrTtB4J+gwOPIDiw2iD5BOyEWAEKiUYQ4dsNett96qYOCZARx0oDdj5owUjZqCjIOK2AkokDn4AI6ggU40X5KpVlfbGlptjjBA0xGGVwdKSQhiKp9lw+PmCUJ+poSGEKIdCqq54YVOmsvfgGdrE+tNZtsCfV90iKGsaES1WOXe3lJMaR42bJhourxFj5DjNEv0kM3lnrJ9wQUXCNbNyw477JDfeustwVKKaQhtA5pBDzps6Hq54k7JpkTTPHkpotFDjgg4wd54440iQbPngTwu09icck0HzYgAqWxn+Hr3hqU4hFcJJUJiE54OOuggvQdDZRZHZjNnzgRMUcz9/fffT7ENSWGM9M033yjiyHSaFDKRM1CO4A499FDhAkP5oizH2qQGymUTevAOoXn8W2PI4CFqjMgamj3OqDm2jH22KhBLCbJT/mloGMAyDjjgAMmll/ihmjCUwZ1XVI7YiugIkGWG5QoduCM7FYNM9OCZpYnKxoWOXFQCBraaPHmy5sh4YKHjzAWnaeMEoXre9hxZQmtO1D/11FPVaQ9RxEX09uvXTwcUZFCctSqaWfzJvieeeEIZ7Ky7+OKLq70nrPfbbz/tR6+44opMs+FsIJqJWNp+Blnl4edmGYvMDCKcy/DwhT53MiqCSkeIyFzbEPbs2VMNEnSgR+UCx5WLEyRXEmDIyvJ0Cz7QjOWoauqi8xdvMhkZtt566zxu3DjtkaND1l6ajPZ3YOD3Z5unNh2LsAycy+D8NrYHEsgGQlGefSGQDTdt2jTh8RNrqILAcC51pkO5sWGhccYZZ8hQEc2rlB47zI6CV72uGGcSUMBznx0HARgVvuDYOfB3iSaY7AyCNP6oqORnn8l+Fhgb/eGHH64cy/4bx3LI0qtXL5Vl9LFjHdzjx4+v9r4EE/yBIahLh2JXZLGsdqzpVII1eGjoWCIRIhi2HLTqrDsWqnQMzyhOFrA+1g4ONTBuNCMSGHgrVho69pJyBM5h3SsHciFTM8caB2N7YHyOLpHRfLnbeAQXcnDEd++99xpNzsMWHGpYZpzgNdaHKkZgvTUP7BT/NFUBAAyVy2uxg8p0OaNmnQff8nD3GkugYpdmo+HfdsGoGkFEdZ57KKj5m2++WQcXH330kdabEERrJX+7cdBA9+t1oSIUD6y54Zw0ceLEFKcpKU611ElG1Krl999m0GtrgM/BATz4u+3SSy/Veh2O0brEvXawltF10hlH05L4+zEaOelE5xylV93yEUccUW1xoE+HjzyRsSn+GNA7ax1/2/Xv379ig31YF9lF8Lfkk08+KX7sAk477TTN8501kt3A008/rR0BXXZUgRT/eqXTh56eevfprV6ELRj2inKd4vRMf+HBFz71bFsJEg/tciwIOBSCfka4iBwxsBFpKBiRAbrzUysAinGhCPgIanwr3bSVX0kdfsBiAAKDgMGoDAcg/EsZgImo1zYFfuhknFr+BALyYdzILNE1L9/Nyw0NtJEJntBGDmgweOeyTNDlW2Skvjf6IbDYVoHLKPVphNNux1ooE4egBbZD7RArVyphATAWDq1VBgNYYeMZp97dWQQONJHBDgK/dKyNbjp2WPnOHANcnqFlA3LH6YxauUtapoFdsIEDFjzkqZWj1BkYBnpAB1sCjzzwJhH4Zr1q5ViB/b/fP+VY0GDEqBVSk8WPBfBULTzCorgdA7wDozSW8WvvwIBLkEAHuXi3sUp45msHmQuejVcPphbH77XywdPVC3rWpTbgbTt42fHM8WxHWQ/uXLV2swzN7u12bEmoZM68jYKzUIpS7GzmG/CM9ggJfnthBVj82Nnt4WM0cLgsYyk7MDgHpzHPhXzoVPLwnO1g+5hHrU7QhJbhsZsdC2xJ2zSQkXnjeL7Rvc0DikZIELfwJSOEo2Q48/jGZYFsPOiiAFmDUuUAtp5iJYyf7RTWOw9wnSme4w5veNbKgHxkLrJzOSDJImDRBSdwB5bmizuyw58BT2Dhayfqw8ofO8VzwELHo9S3fOZ7yQO+7R1/KWMh7shCSCKa4ShkjqsU0nMIZwGNizFLWBFr8mP+gPEMTe52TPkdGHgZDl44joHMJW/DlOVRgCt/MHTJw9nnOcMSsNC1TaDrzGe+Vj7j+W4+vnvpgJ+z27D17n/ZsRBDOEZpGE3ETz3BEdKOtXOBY94GwAEITxa1Z5R8ykCBBllm2WodW9LmG6OUqcRjHhguz5f4pQzowrurFnDgmbbfuXsOeORlWGYCCxuYtu9l2RZCg5+/5dgGNFvT/wAL/KU19h8gd0uEJhZoObaJgf6tn1uO/bd6ronc/wUKDjjXRn0hNAAAAABJRU5ErkJggg==" alt="Estona"></div>
+    <h1>ADMIN ESTONA</h1>
+    <div class="login-field"><label>Correo</label><input id="loginUser" type="email" required></div>
+    <div class="login-field"><label>Contraseña</label><input id="loginPassword" type="password" required></div>
+    <button class="login-button" type="submit">INGRESAR</button>
+    <div id="loginError" class="login-error"></div>
+    <div class="login-version">v2.5 · Docs Eq</div>
+  </form>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAnCAYAAADadbxDAAABQmlDQ1BJQ0MgUHJvZmlsZQAAKJF9kM1Kw0AUhU9qpUUKihRXCsF1lFj/1rULERRKVVB3yTSmQhvHaUQE9271Adz5EFI3PoA7QVB8ArdCFbTEM42aquiFO/fjzJk7lwukso6U9TSARhCqyuKCubG5ZWYekUUKeRiYd0RTFsvlZVrwWb9H+5Y+xs2E7vX7/t8YqHpNwfrGtIVUIWBY5PJBKDUfkfOKQ5FPNPsxn2t2Y77oetYqJfI1eUjUnCr5gWy5Pbrfw436vviYQU+f84L1Vd2HOYoV7MDkuYuAFLKqP/wzXX+JDolDKLp91PjCRJGKRB0eeYl9BCZhkQuwmXN6zz/3l2iqAMw+86upRHOHgdY9MHKcaOOnwKANXIbSUc7XVo12urk9XYg5p4D+lyh6GgMyLaCjouj1LIo63GHfHXC19w5gSVuQ6WR1QgAAAFZlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA5KGAAcAAAASAAAARKACAAQAAAABAAAAdqADAAQAAAABAAAAJwAAAABBU0NJSQAAAFNjcmVlbnNob3T1nKcTAAAB1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4zOTwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj4xMTg8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpVc2VyQ29tbWVudD5TY3JlZW5zaG90PC9leGlmOlVzZXJDb21tZW50PgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KwC0WEAAAD05JREFUeAHtmWfMVMUaxwdEsPceCxps2DECNxJDbChib1EBeywhyBexQAxG1BA1tgQSIRIVDMEK9hZj771/UIjGAqKAIsXC3Of3h/+5w97dd1/1i77ZSc6ec+Y8vc0zs51yjNQaHc4CnTucRi2FZIGWYztoILQc23JsB7VAB1WrlbEtx3ZQC3RQtVoZ23JsB7VAB1WrlbEtx3ZQC3RQtRpm7B9//CGVly9fXqnO3E8//VS9L1iwIC1evDgtWbJEc7x7gPfbb7/5NS1atEjPJf6cOXOSaf7666/6Pm/evP/DYeLHH39Mpg/dZcuW6bKc0Od0dOHChZU84DFn+eBtPnwDdunSpTxKD5+uAgd9+KCfbfDzzz9rHnrM8934IhI/vJsHMkPLult+8zEO9ObOnVvhff/99/pk+0HPMpT2M369e6dgUvesGGZrrLFG6tSpk/AQaoMNNtDzu+++m+6666704osvShgUXnvttdM+++yTzjvvvLTHHnukbt26pd9//z2tueaaEqpz585ScJ111knfffdduu2229Jrr72WZs2alX755Rfh9+jRIx1++OHplFNOEW/4o8jrr7+eLr/8chnTRoOeleWZa6211kpLFi9Jy/PydNxxx6WRI0em9ddfXzIj47rrritHv/POO+n2229Pn332mfhDE9123nnndOSRR6ajjz66wsO40AYG4/Nt9dVXF+/zzz8/nXvuucm0YYRMwJ999tnplVdekR6HHHJIGjt2rPCAwZZvvPGGvgPz1VdfSbcuXbpIB/Q48MAD00knnZT23HNPUPSdeUbJTxP1fnBsvRGRl8Mx+hRZUYFce+21ORxAMORwZt5www31zHsYUVcoK3hohKI5ol/vPH/xxRd5//33z2Fk4YPHFQGQQ/C8ySab5I022iiPHj264v/QzIcqGGCB69q1q3Dgz7PpcIf2kCFDxDOyModT9ByOyRdeeKF4ABfBV+FFEOkZnfbee+8MTw/sAI233367ggd/q622ys8++6zArCO2ikDNEQA5HCX4gw8+OCMH+kdQ58mTJ69Cp5SdZ2yBPLvvvrtg7QfzgE6zQQQ3HAiIc7gYl1xyiYxWMl9vvfVyZKEEKQW0c8GL0sItR/mSwiUcz6WBeSdAhg4dKmOA98gjj6xiCJQmAEo6ZYDhnDPPPBPUKjhw6oknnljhbLnlltUzgWBa6MMz36+//nrR8E9kl/gSSJHhgiMIouRWwYMTsFdkvvTCSVGFTELyPP7445XNCFLsZ/7YopSH4Hn55ZczAeOrItbGQ5uOBS/SXugzZsyolEEQopHMJQMuuuiivNNOO1UZa0HvvPNO4UY51Z2I9zcU6d69e44Sm2+55ZZMIOyyyy5SECeR2QyU+fbbb/PUKVPzo48+mpGDC2M5I3bcccd8zz336DuZNn36dGWXIztKn+jbeAQOzwRHlLrcu3dvyeLvzt5tttkmR8mUHGTLBx98oGoBHDB2QCwdgvnhhx+qJDjssMPEA7jjjz9e3105CISeu/ZUxUIWyxBLWN5iiy2ExzxBAS/wrQuB42cRbfDT0LEWwnhR88XEmdG3b9/8+eef+7OeY00QDAZH6VhzK0URBuc4O61wNFCiQZTjwAkTJuSrrrqqossDRkUhlyTmhg8fnp1dffr0qTKGb64whsfZzjA7FfmfeeYZ4VEmv/76a1Uk02Q5sFGhCcx7772n4DUM3+3cG264ATBlL/djjz1WuqIvjkEWl1LkizU+33fffXn27NmAa1DRCFBKN7R9bbfddnnWrFmCcaKtwGj829CxCEFkMT755JMqeigdGOnjjz/WNwSmZBuOKEcg4DbddNP86aefVg7BsXyz0QiSc845J7/00kvC5wcDMlCebGXYIAQb/KgAZ511VrW27rXXXirzpdJkKcEEPDzgCz8MjYzROIl2SR/8aLgqXcEha9CB8fzzz8ux0KDy8M2OhTYVaf78+YIdNGhQtTwdc8wxVbDxMRrTVbIOh9rWfKcyOIGQAXu/+eabCj6+t2d0CcS6I9aRxBUGTmF4bRlCCXVkm2++efrwww/V2UU5U1cbzESHjhE8tgNcdL5RpvWt73/6po033jhFyVIXDO1JkyaliNK02267paOOOiqdfPLJKTJCHSTdJXShx3A3ihx04auttprm4RNVQt0oE7yH8dXRh2PTq6++KjhvH2L9lkx0uZtttpnoRxClcFaig73jjjtEOwJDeLEmqmPu1rWb7MA89E899dT02GOPySbh0BQOrLpsZEM/BvICDx58eKYThs8LL7ygbRO7D/TcdtttU2SoYKOqiQb6sJPYd999BQttbNPmaMv7LsdXXnmlIp7yGcSUjeVayZzXA55DcK1/zI0ZM0YsQjiVvWj7q26YaIcOdMHholm45pprqiwtsxBCZC8Xazu8KPt0j2QnwzI728nuCCbBAh/Gyw888EDVpQqp5oclhAYMWO7oAD2aJ2RkDlrPPfdcjsAUnPUfMGCAqJ1wwgkVzwiAVTL2uuuu0/qO/tCzzXjnmeWCisczF3Lcf//9NVK2/drQ7USW929RUrW/IgKJKqKL7x5EejnIHi4iiywJY1f72VGjRqVoltL222+vbGTzTlaFs0SXbI4tVbrssstEksx0pjEBbzK3vQMZoMGIkiaZoEFVgG6YR9+Qw7IuW7pMVYgMY48dThMctMgi5hhRPlN02tr7QjOcpL3p1VdfLTnDQYLjTAC7Me6eene66aabpC+80TuWJlWQaJyUrcBhe3CwI7QtJzL5GbhGo2EphgAGhDHKUA4iinTHQCNGjJAiONhORgGUJxA4WIDGwIEDJSBGwxCxjUgRzWnw4MEpmof04IMPJg4MvvzyS5UdjBhZmqZMmaLDDso4dMqBos2GlccwlH9KGXIiI+Uz1kA9Qws9MST36MbTgoUrTtB4J+gwOPIDiw2iD5BOyEWAEKiUYQ4dsNett96qYOCZARx0oDdj5owUjZqCjIOK2AkokDn4AI6ggU40X5KpVlfbGlptjjBA0xGGVwdKSQhiKp9lw+PmCUJ+poSGEKIdCqq54YVOmsvfgGdrE+tNZtsCfV90iKGsaES1WOXe3lJMaR42bJhourxFj5DjNEv0kM3lnrJ9wQUXCNbNyw477JDfeustwVKKaQhtA5pBDzps6Hq54k7JpkTTPHkpotFDjgg4wd54440iQbPngTwu09icck0HzYgAqWxn+Hr3hqU4hFcJJUJiE54OOuggvQdDZRZHZjNnzgRMUcz9/fffT7ENSWGM9M033yjiyHSaFDKRM1CO4A499FDhAkP5oizH2qQGymUTevAOoXn8W2PI4CFqjMgamj3OqDm2jH22KhBLCbJT/mloGMAyDjjgAMmll/ihmjCUwZ1XVI7YiugIkGWG5QoduCM7FYNM9OCZpYnKxoWOXFQCBraaPHmy5sh4YKHjzAWnaeMEoXre9hxZQmtO1D/11FPVaQ9RxEX09uvXTwcUZFCctSqaWfzJvieeeEIZ7Ky7+OKLq70nrPfbbz/tR6+44opMs+FsIJqJWNp+Blnl4edmGYvMDCKcy/DwhT53MiqCSkeIyFzbEPbs2VMNEnSgR+UCx5WLEyRXEmDIyvJ0Cz7QjOWoauqi8xdvMhkZtt566zxu3DjtkaND1l6ajPZ3YOD3Z5unNh2LsAycy+D8NrYHEsgGQlGefSGQDTdt2jTh8RNrqILAcC51pkO5sWGhccYZZ8hQEc2rlB47zI6CV72uGGcSUMBznx0HARgVvuDYOfB3iSaY7AyCNP6oqORnn8l+Fhgb/eGHH64cy/4bx3LI0qtXL5Vl9LFjHdzjx4+v9r4EE/yBIahLh2JXZLGsdqzpVII1eGjoWCIRIhi2HLTqrDsWqnQMzyhOFrA+1g4ONTBuNCMSGHgrVho69pJyBM5h3SsHciFTM8caB2N7YHyOLpHRfLnbeAQXcnDEd++99xpNzsMWHGpYZpzgNdaHKkZgvTUP7BT/NFUBAAyVy2uxg8p0OaNmnQff8nD3GkugYpdmo+HfdsGoGkFEdZ57KKj5m2++WQcXH330kdabEERrJX+7cdBA9+t1oSIUD6y54Zw0ceLEFKcpKU611ElG1Krl999m0GtrgM/BATz4u+3SSy/Veh2O0brEvXawltF10hlH05L4+zEaOelE5xylV93yEUccUW1xoE+HjzyRsSn+GNA7ax1/2/Xv379ig31YF9lF8Lfkk08+KX7sAk477TTN8501kt3A008/rR0BXXZUgRT/eqXTh56eevfprV6ELRj2inKd4vRMf+HBFz71bFsJEg/tciwIOBSCfka4iBwxsBFpKBiRAbrzUysAinGhCPgIanwr3bSVX0kdfsBiAAKDgMGoDAcg/EsZgImo1zYFfuhknFr+BALyYdzILNE1L9/Nyw0NtJEJntBGDmgweOeyTNDlW2Skvjf6IbDYVoHLKPVphNNux1ooE4egBbZD7RArVyphATAWDq1VBgNYYeMZp97dWQQONJHBDgK/dKyNbjp2WPnOHANcnqFlA3LH6YxauUtapoFdsIEDFjzkqZWj1BkYBnpAB1sCjzzwJhH4Zr1q5ViB/b/fP+VY0GDEqBVSk8WPBfBULTzCorgdA7wDozSW8WvvwIBLkEAHuXi3sUp45msHmQuejVcPphbH77XywdPVC3rWpTbgbTt42fHM8WxHWQ/uXLV2swzN7u12bEmoZM68jYKzUIpS7GzmG/CM9ggJfnthBVj82Nnt4WM0cLgsYyk7MDgHpzHPhXzoVPLwnO1g+5hHrU7QhJbhsZsdC2xJ2zSQkXnjeL7Rvc0DikZIELfwJSOEo2Q48/jGZYFsPOiiAFmDUuUAtp5iJYyf7RTWOw9wnSme4w5veNbKgHxkLrJzOSDJImDRBSdwB5bmizuyw58BT2Dhayfqw8ofO8VzwELHo9S3fOZ7yQO+7R1/KWMh7shCSCKa4ShkjqsU0nMIZwGNizFLWBFr8mP+gPEMTe52TPkdGHgZDl44joHMJW/DlOVRgCt/MHTJw9nnOcMSsNC1TaDrzGe+Vj7j+W4+vnvpgJ+z27D17n/ZsRBDOEZpGE3ETz3BEdKOtXOBY94GwAEITxa1Z5R8ykCBBllm2WodW9LmG6OUqcRjHhguz5f4pQzowrurFnDgmbbfuXsOeORlWGYCCxuYtu9l2RZCg5+/5dgGNFvT/wAL/KU19h8gd0uEJhZoObaJgf6tn1uO/bd6ronc/wUKDjjXRn0hNAAAAABJRU5ErkJggg==" alt="Estona"></div>
+    <div class="portal-name">ADMIN ESTONA</div>
+    <div class="nav">
+      <button id="dashboardNav" class="active">Indicadores</button>
+      <button id="expensesNav">Gastos</button>
+      <button id="invoicesNav">Facturas recibidas</button>
+      <button id="docsEqNav">Docs Eq</button>
+    </div>
+    <div class="user">
+      <strong id="userName">Usuario</strong>
+      <small>Portal administrativo</small>
+      <button id="logoutButton" class="logout">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main>
+    <section id="dashboardView">
+      <header class="top">
+        <div><h1>Indicadores</h1><p>Resumen administrativo de egresos.</p></div>
+      </header>
+
+      <section class="filters shared-admin-filters">
+        <label><span>Desde</span>
+          <input id="dashboardDateFrom" type="date">
+        </label>
+        <label><span>Hasta</span>
+          <input id="dashboardDateTo" type="date">
+        </label>
+        <label><span>Categoría</span>
+          <select id="dashboardCategory">
+            <option value="">Todas</option>
+          </select>
+        </label>
+        <button id="dashboardShowAll" class="btn secondary" type="button">Ver todo</button>
+      </section>
+
+      <section id="dashboardKpis" class="kpis"></section>
+
+      <section class="card dashboard-single-chart">
+        <div class="chart-title-row">
+          <div>
+            <h3 id="expenseChartTitle">Gastos por categoría</h3>
+            <p id="expenseChartPeriod"></p>
+          </div>
+        </div>
+        <div id="categoryChart" class="chart-list"></div>
+      </section>
+    </section>
+
+    <section id="expensesView" class="hidden">
+      <header class="top">
+        <div><h1>Gastos</h1><p id="expenseHistoryLabel">Registro de egresos.</p></div>
+        <div class="top-actions">
+          <button id="showAllExpenses" class="btn secondary" type="button">Ver todo</button>
+          <button id="newExpense" class="btn primary">+ Nuevo gasto</button>
+        </div>
+      </header>
+
+      <section id="expenseForm" class="card hidden" style="margin-bottom:14px">
+        <div class="grid">
+          <div class="field"><label>Tipo de documento</label><select id="expenseDocumentType">
+              <option value="Factura electrónica">FACTURA ELECTRÓNICA</option>
+              <option value="Documento Equivalente">DOCUMENTO EQUIVALENTE</option>
+            </select></div>
+          <div class="field"><label>Fecha emisión</label><input id="expenseDate" type="date"></div>
+          <div class="field"><label>NIT Emisor</label><input id="expenseNit" inputmode="numeric"></div>
+          <div class="field"><label>Nombre Emisor</label><input id="expenseIssuer" placeholder="Proveedor / emisor"></div>
+          <div class="field full"><label>Descripción</label><input id="expenseDescription" placeholder="Descripción"></div>
+          <div class="field"><label>IVA</label><input id="expenseIva" type="number" min="0" step="0.01" value="0"></div>
+          <div class="field"><label>Total</label><input id="expenseTotal" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Categoría</label>
+            <select id="expenseCategory">
+              <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+              <option value="ARRIENDO">ARRIENDO</option>
+              <option value="EQUIPOS">EQUIPOS</option>
+              <option value="IMPUESTOS">IMPUESTOS</option>
+              <option value="MATERIA PRIMA">MATERIA PRIMA</option>
+              <option value="MOLDES">MOLDES</option>
+              <option>NO DATA</option>
+              <option value="NOMINA EMPLEADOS">NOMINA EMPLEADOS</option>
+              <option value="OPERACIÓN">OPERACIÓN</option>
+              <option value="PRESTAMO EMPLEADOS">PRESTAMO EMPLEADOS</option>
+              <option value="PUBLICIDAD">PUBLICIDAD</option>
+              <option value="TRANSPORTE">TRANSPORTE</option>
+              <option>UTILIDAD</option><option value="VIATICOS">VIATICOS</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="paid-check">
+              <input id="expensePaid" type="checkbox">
+              <span>PAGADO</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-actions expense-form-actions">
+          <div id="expenseSaveState" class="expense-save-state">Nuevo gasto: usa Guardar gasto.</div>
+          <button id="cancelExpense" class="btn secondary" type="button">Cancelar</button>
+          <button id="saveExpense" class="btn primary" type="button">Guardar gasto</button>
+        </div>
+      </section>
+
+      <section class="filters expense-shared-filters">
+        <label><span>Buscar</span>
+          <input id="expenseSearch" placeholder="Proveedor, NIT, factura, descripción, concepto...">
+        </label>
+        <label><span>Desde</span>
+          <input id="expenseDateFrom" type="date">
+        </label>
+        <label><span>Hasta</span>
+          <input id="expenseDateTo" type="date">
+        </label>
+        <label><span>Categoría</span>
+          <select id="expenseCategoryFilter"><option value="">Todas</option></select>
+        </label>
+      </section>
+
+      <section id="expenseKpis" class="kpis"></section>
+      <section id="expensesList"></section>
+    </section>
+
+    <section id="invoicesView" class="hidden">
+      <header class="top">
+        <div><h1>Facturas recibidas</h1><p>Bandeja de revisión antes de llevar documentos a Gastos.</p></div>
+        <div class="invoice-top-actions">
+          <button id="bulkImportCategorized" class="btn primary" type="button">Importar categorizadas</button>
+        </div>
+      </header>
+      <section class="filters invoice-filters">
+        <label><span>Buscar</span><input id="invoiceSearch" placeholder="Proveedor, NIT, factura o descripción"></label>
+        <label><span>Estado</span><select id="invoiceStatusFilter"><option value="">Todos</option><option value="PENDIENTE">Pendientes</option><option value="YA REGISTRADA">Ya registradas</option><option value="IMPORTADA">Importadas</option><option value="IGNORADA">Ignoradas</option></select></label>
+      </section>
+      <section id="invoiceKpis" class="kpis"></section>
+      <section id="invoiceList"></section>
+    </section>
+
+
+    <div id="invoiceImportModal" class="modal hidden">
+      <div class="modal-backdrop" data-close-invoice-modal></div>
+      <section class="modal-card invoice-import-card">
+        <div class="modal-head">
+          <div>
+            <h2>Importar factura</h2>
+            <p>Revisa los datos y selecciona la categoría.</p>
+          </div>
+          <button id="closeInvoiceImport" class="icon-btn" type="button">×</button>
+        </div>
+
+        <div class="invoice-review-grid">
+          <div><small>Fecha</small><strong id="reviewInvoiceDate">—</strong></div>
+          <div><small>Proveedor</small><strong id="reviewInvoiceProvider">—</strong></div>
+          <div><small>NIT</small><strong id="reviewInvoiceNit">—</strong></div>
+          <div><small>Factura</small><strong id="reviewInvoiceNumber">—</strong></div>
+          <div class="wide"><small>Descripción</small><strong id="reviewInvoiceDescription">—</strong></div>
+          <div><small>IVA</small><strong id="reviewInvoiceIva">—</strong></div>
+          <div><small>Total</small><strong id="reviewInvoiceTotal">—</strong></div>
+        </div>
+
+        <label class="modal-category">
+          <span>Categoría</span>
+          <select id="invoiceImportCategory">
+            <option value="">Seleccionar categoría</option>
+            <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+            <option value="ARRIENDO">ARRIENDO</option>
+            <option value="EQUIPOS">EQUIPOS</option>
+            <option value="IMPUESTOS">IMPUESTOS</option>
+            <option value="MATERIA PRIMA">MATERIA PRIMA</option>
+            <option value="MOLDES">MOLDES</option>
+            <option>NO DATA</option>
+            <option value="NOMINA EMPLEADOS">NOMINA EMPLEADOS</option>
+            <option value="OPERACIÓN">OPERACIÓN</option>
+            <option value="PRESTAMO EMPLEADOS">PRESTAMO EMPLEADOS</option>
+            <option value="PUBLICIDAD">PUBLICIDAD</option>
+            <option value="TRANSPORTE">TRANSPORTE</option>
+            <option>UTILIDAD</option>
+            <option value="VIATICOS">VIATICOS</option>
+          </select>
+        </label>
+
+        <div class="modal-actions">
+          <button id="cancelInvoiceImport" class="btn secondary" type="button">Cancelar</button>
+          <button id="confirmInvoiceImport" class="btn primary" type="button">Importar a Gastos</button>
+        </div>
+      </section>
+    </div>
+
+
+    <section id="docsEqView" class="view hidden">
+      <div class="view-head">
+        <div>
+          <h1>Docs Eq</h1>
+          <p>Transferencias y gastos sin factura electrónica.</p>
+        </div>
+        <button id="newDocEqBtn" class="btn primary" type="button">Nuevo Doc Eq</button>
+      </div>
+
+      <div id="docsEqKpis" class="kpis"></div>
+
+      <div class="filters docs-eq-filters">
+        <label>
+          <span>Desde</span>
+          <input id="docsEqFrom" type="date">
+        </label>
+        <label>
+          <span>Hasta</span>
+          <input id="docsEqTo" type="date">
+        </label>
+        <label>
+          <span>Estado</span>
+          <select id="docsEqStatus">
+            <option value="">Todos</option>
+            <option value="PENDIENTE">Pendientes</option>
+            <option value="IMPORTADO">Importados</option>
+            <option value="IGNORADO">Ignorados</option>
+          </select>
+        </label>
+        <label class="search-field">
+          <span>Buscar</span>
+          <input id="docsEqSearch" type="search" placeholder="Proveedor, concepto, referencia...">
+        </label>
+      </div>
+
+      <div id="docsEqList"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+normalizeHistoricExpenseCategories();
+</script>
+<script>
+const db=window.supabase.createClient('https://ujyhzcomdzhppggteqnv.supabase.co','sb_publishable_weeKs-Ri67UrVM__f7ZtiQ_kN1ldayw',{auth:{persistSession:true,autoRefreshToken:true}});
+let expenses=[];
+let receivedInvoices=[];
+let docsEq=[];
+let docEqPreviewUrl=null;
+let selectedInvoiceForImport=null;
+let editingExpenseId=null;
+let expenseAutosaveTimer=null;
+let expenseAutosaveBusy=false;
+let expenseAutosaveQueued=false;
+let sharedFilters={
+  from:'',
+  to:'',
+  category:''
+};
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const norm=v=>String(v||'').trim().toUpperCase();
+const money=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(v||0));
+const monthNames={'01':'Enero','02':'Febrero','03':'Marzo','04':'Abril','05':'Mayo','06':'Junio','07':'Julio','08':'Agosto','09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'};
+
+function monthKey(v){return String(v||'').slice(0,7)}
+function formatDate(v){
+  if(!v)return '—';
+  const [y,m,d]=String(v).slice(0,10).split('-');
+  return y&&m&&d?`${d}/${m}/${y}`:String(v);
+}
+
+
+async function normalizeHistoricExpenseCategories(){
+  const {data,error}=await db
+    .from('gastos_admin')
+    .select('id,categoria')
+    .not('categoria','is',null);
+
+  if(error){
+    console.warn('No se pudieron revisar categorías históricas:',error.message);
+    return;
+  }
+
+  const changes=(data||[])
+    .map(x=>({id:x.id, old:x.categoria, normalized:norm(x.categoria)}))
+    .filter(x=>x.normalized && x.old!==x.normalized);
+
+  for(const item of changes){
+    const {error:updateError}=await db
+      .from('gastos_admin')
+      .update({categoria:item.normalized})
+      .eq('id',item.id);
+
+    if(updateError){
+      console.warn('No se pudo normalizar categoría',item.id,updateError.message);
+    }
+  }
+}
+
+async function loadExpenses(){
+  const pageSize=1000;
+  let offset=0;
+  let all=[];
+
+  while(true){
+    const {data,error}=await db
+      .from('gastos_admin')
+      .select('*')
+      .order('fecha',{ascending:false})
+      .order('created_at',{ascending:false})
+      .range(offset,offset+pageSize-1);
+
+    if(error)throw error;
+
+    const batch=data||[];
+    all=all.concat(batch);
+
+    if(batch.length<pageSize)break;
+
+    offset+=pageSize;
+  }
+
+  expenses=all.map(x=>({
+    ...x,
+    categoria:norm(x.categoria)||'NO DATA',
+    nombre_emisor:x.nombre_emisor||x.proveedor||null,
+    descripcion:x.descripcion||x.concepto||null,
+    total:Number(x.total??x.valor??0),
+    iva:Number(x.iva||0),
+    pagado:x.pagado===true
+  }));
+
+  populateFilters();
+  renderExpenses();
+  renderDashboard();
+}
+
+
+async function loadReceivedInvoices(){
+  const pageSize=1000;
+  let offset=0;
+  let all=[];
+
+  while(true){
+    const {data,error}=await db
+      .from('facturas_recibidas')
+      .select('*')
+      .order('created_at',{ascending:false})
+      .range(offset,offset+pageSize-1);
+
+    if(error)throw error;
+
+    const batch=data||[];
+    all=all.concat(batch);
+
+    if(batch.length<pageSize)break;
+
+    offset+=pageSize;
+  }
+
+  receivedInvoices=all.map(x=>({
+    ...x,
+    categoria:x.categoria?norm(x.categoria):null
+  }));
+  renderReceivedInvoices();
+}
+function filteredReceivedInvoices(){
+  const q=norm($('#invoiceSearch')?.value||'');
+  const status=$('#invoiceStatusFilter')?.value||'';
+  return receivedInvoices.filter(x=>{
+    const text=norm(`${x.tipo_documento} ${x.numero_factura} ${x.nit_emisor} ${x.nombre_emisor} ${x.descripcion} ${x.categoria}`);
+    return (!q||text.includes(q))&&(!status||x.estado===status);
+  });
+}
+function invoiceStateClass(state){
+  if(state==='YA REGISTRADA')return 'registered-badge';
+  if(state==='IMPORTADA')return 'paid-badge';
+  if(state==='IGNORADA')return 'ignored-badge';
+  return 'pending-badge';
+}
+
+function renderReceivedInvoices(){
+  const rows=filteredReceivedInvoices();
+
+  const pending=receivedInvoices.filter(x=>x.estado==='PENDIENTE').length;
+  const registered=receivedInvoices.filter(x=>x.estado==='YA REGISTRADA').length;
+  const imported=receivedInvoices.filter(x=>x.estado==='IMPORTADA').length;
+  const ignored=receivedInvoices.filter(x=>x.estado==='IGNORADA').length;
+  const categorized=receivedInvoices.filter(x=>x.estado==='PENDIENTE'&&x.categoria).length;
+
+  $('#invoiceKpis').innerHTML=`
+    <div class="kpi"><small>Pendientes</small><strong>${pending}</strong></div>
+    <div class="kpi"><small>Con categoría</small><strong>${categorized}</strong></div>
+    <div class="kpi"><small>Ya registradas</small><strong>${registered}</strong></div>
+    <div class="kpi"><small>Importadas</small><strong>${imported}</strong></div>
+    <div class="kpi"><small>Ignoradas</small><strong>${ignored}</strong></div>`;
+
+  $('#invoiceList').innerHTML=rows.length?`
+    <div class="list-wrap">
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>NIT</th>
+            <th>Factura</th>
+            <th>Descripción</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(x=>`
+            <tr>
+              <td>${formatDate(x.fecha_emision)}</td>
+              <td><strong>${esc(x.nombre_emisor||'—')}</strong></td>
+              <td>${esc(x.nit_emisor||'—')}</td>
+              <td class="invoice-number-cell" title="${esc(x.numero_factura||'')}">${esc(x.numero_factura||'—')}</td>
+              <td class="invoice-description-cell" title="${esc(x.descripcion||'')}">${esc(x.descripcion||'—')}</td>
+              <td class="money">${money(x.iva)}</td>
+              <td class="money"><strong>${money(x.total)}</strong></td>
+              <td>
+                <span class="badge ${invoiceStateClass(x.estado)}">${esc(x.estado||'PENDIENTE')}</span>
+                ${x.estado==='PENDIENTE'&&x.categoria?`<div class="auto-category">${esc(x.categoria)}</div>`:''}
+              </td>
+              <td>
+                ${x.estado==='PENDIENTE'?`
+                  <div class="invoice-actions">
+                    <button class="btn primary" data-open-import-invoice="${x.id}">Importar</button>
+                    <button class="btn secondary" data-ignore-invoice="${x.id}">Ignorar</button>
+                  </div>
+                `:x.estado==='YA REGISTRADA'?`
+                  <span class="registered-note">Ya existe en Gastos</span>
+                `:''}
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`
+    :'<div class="empty">No hay facturas en esta bandeja.</div>';
+
+  document.querySelectorAll('[data-open-import-invoice]').forEach(button=>{
+    button.onclick=()=>{
+      const invoice=receivedInvoices.find(x=>x.id===button.dataset.openImportInvoice);
+      if(invoice)openInvoiceImportModal(invoice);
+    };
+  });
+
+  document.querySelectorAll('[data-ignore-invoice]').forEach(button=>{
+    button.onclick=async()=>{
+      if(!confirm('¿Ignorar esta factura?'))return;
+
+      const {error}=await db
+        .from('facturas_recibidas')
+        .update({estado:'IGNORADA'})
+        .eq('id',button.dataset.ignoreInvoice)
+        .eq('estado','PENDIENTE');
+
+      if(error){
+        alert(error.message);
+        return;
+      }
+
+      await loadReceivedInvoices();
+    };
+  });
+}
+
+function openInvoiceImportModal(invoice){
+  if(invoice.estado!=='PENDIENTE'){
+    alert('Esta factura ya no está pendiente.');
+    return;
+  }
+
+  selectedInvoiceForImport=invoice;
+
+  $('#reviewInvoiceDate').textContent=formatDate(invoice.fecha_emision);
+  $('#reviewInvoiceProvider').textContent=invoice.nombre_emisor||'—';
+  $('#reviewInvoiceNit').textContent=invoice.nit_emisor||'—';
+  $('#reviewInvoiceNumber').textContent=invoice.numero_factura||'—';
+  $('#reviewInvoiceDescription').textContent=invoice.descripcion||'—';
+  $('#reviewInvoiceIva').textContent=money(invoice.iva);
+  $('#reviewInvoiceTotal').textContent=money(invoice.total);
+  $('#invoiceImportCategory').value=invoice.categoria?norm(invoice.categoria):'';
+
+  $('#invoiceImportModal').classList.remove('hidden');
+}
+
+function closeInvoiceImportModal(){
+  selectedInvoiceForImport=null;
+  $('#invoiceImportModal').classList.add('hidden');
+  $('#invoiceImportCategory').value='';
+}
+
+async function confirmInvoiceImport(){
+  if(!selectedInvoiceForImport)return;
+
+  const category=norm($('#invoiceImportCategory').value);
+
+  if(!category){
+    alert('Selecciona una categoría antes de importar.');
+    $('#invoiceImportCategory').focus();
+    return;
+  }
+
+  const button=$('#confirmInvoiceImport');
+  button.disabled=true;
+  button.textContent='Importando...';
+
+  const {error}=await db.rpc('importar_factura_recibida',{
+    p_factura_id:selectedInvoiceForImport.id,
+    p_categoria:category
+  });
+
+  button.disabled=false;
+  button.textContent='Importar a Gastos';
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  closeInvoiceImportModal();
+  await Promise.all([loadReceivedInvoices(),loadExpenses()]);
+}
+
+async function bulkImportCategorizedInvoices(){
+  const ready=receivedInvoices.filter(x=>x.estado==='PENDIENTE'&&x.categoria);
+
+  if(!ready.length){
+    alert('No hay facturas pendientes con categoría automática.');
+    return;
+  }
+
+  const totalValue=ready.reduce((sum,x)=>sum+Number(x.total||0),0);
+
+  if(!confirm(
+    `Se importarán ${ready.length} facturas categorizadas por un total de ${money(totalValue)}.\n\n`+
+    `Solo se importarán facturas PENDIENTES con una regla de categoría por NIT. ¿Continuar?`
+  )) return;
+
+  const button=$('#bulkImportCategorized');
+  button.disabled=true;
+  button.textContent='Importando...';
+
+  const {data,error}=await db.rpc('importar_facturas_categorizadas');
+
+  button.disabled=false;
+  button.textContent='Importar categorizadas';
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const result=Array.isArray(data)?data[0]:data;
+  const importedCount=result?.importadas ?? 0;
+
+  alert(`${importedCount} facturas fueron importadas a Gastos como CURSADAS.`);
+
+  await Promise.all([loadReceivedInvoices(),loadExpenses()]);
+}
+
+async function loadDocsEq(){
+  const pageSize=1000;
+  let offset=0;
+  let all=[];
+
+  while(true){
+    const {data,error}=await db
+      .from('docs_equivalentes_revision')
+      .select('*')
+      .order('fecha',{ascending:false})
+      .order('created_at',{ascending:false})
+      .range(offset,offset+pageSize-1);
+
+    if(error){
+      console.error(error);
+      docsEq=[];
+      renderDocsEq();
+      return;
+    }
+
+    const batch=data||[];
+    all=all.concat(batch);
+    if(batch.length<pageSize)break;
+    offset+=pageSize;
+  }
+
+  docsEq=all;
+  renderDocsEq();
+}
+
+function filteredDocsEq(){
+  const from=$('#docsEqFrom')?.value||'';
+  const to=$('#docsEqTo')?.value||'';
+  const status=$('#docsEqStatus')?.value||'';
+  const q=norm($('#docsEqSearch')?.value||'');
+
+  return docsEq.filter(x=>{
+    if(from && x.fecha<from)return false;
+    if(to && x.fecha>to)return false;
+    if(status && x.estado!==status)return false;
+
+    if(q){
+      const text=norm(`${x.proveedor||''} ${x.concepto||''} ${x.referencia||''} ${x.categoria||''} ${x.medio_pago||''}`);
+      if(!text.includes(q))return false;
+    }
+
+    return true;
+  });
+}
+
+function docsEqStateClass(state){
+  if(state==='IMPORTADO')return 'paid-badge';
+  if(state==='IGNORADO')return 'ignored-badge';
+  return 'pending-badge';
+}
+
+function renderDocsEq(){
+  if(!$('#docsEqList'))return;
+
+  const rows=filteredDocsEq();
+  const pending=docsEq.filter(x=>x.estado==='PENDIENTE').length;
+  const imported=docsEq.filter(x=>x.estado==='IMPORTADO').length;
+  const ignored=docsEq.filter(x=>x.estado==='IGNORADO').length;
+  const pendingValue=docsEq
+    .filter(x=>x.estado==='PENDIENTE')
+    .reduce((s,x)=>s+Number(x.valor||0),0);
+
+  $('#docsEqKpis').innerHTML=`
+    <div class="kpi"><small>Pendientes</small><strong>${pending}</strong></div>
+    <div class="kpi"><small>Valor pendiente</small><strong>${money(pendingValue)}</strong></div>
+    <div class="kpi"><small>Importados</small><strong>${imported}</strong></div>
+    <div class="kpi"><small>Ignorados</small><strong>${ignored}</strong></div>`;
+
+  $('#docsEqList').innerHTML=rows.length?`
+    <div class="list-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Concepto</th>
+            <th>Referencia</th>
+            <th>Categoría</th>
+            <th>Valor</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(x=>`
+            <tr>
+              <td>${formatDate(x.fecha)}</td>
+              <td><strong>${esc(x.proveedor||'—')}</strong></td>
+              <td>${esc(x.concepto||'—')}</td>
+              <td>${esc(x.referencia||'—')}</td>
+              <td>${esc(x.categoria||'—')}</td>
+              <td class="money"><strong>${money(x.valor)}</strong></td>
+              <td><span class="badge ${docsEqStateClass(x.estado)}">${esc(x.estado)}</span></td>
+              <td>
+                ${x.estado==='PENDIENTE'?`
+                  <div class="invoice-actions">
+                    <button type="button" class="btn primary" data-import-doc-eq="${x.id}" onclick="importDocEq('${x.id}'); return false;">Importar</button>
+                    <button type="button" class="btn secondary" data-ignore-doc-eq="${x.id}" onclick="ignoreDocEq('${x.id}'); return false;">Ignorar</button>
+                  </div>`:''}
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`
+    :'<div class="empty">No hay documentos equivalentes para mostrar.</div>';
+
+}
+
+function openDocEqModal(){
+  $('#docEqModal').classList.remove('hidden');
+  $('#docEqDate').value=new Date().toISOString().slice(0,10);
+}
+
+function closeDocEqModal(){
+  $('#docEqModal').classList.add('hidden');
+
+  if(docEqPreviewUrl){
+    URL.revokeObjectURL(docEqPreviewUrl);
+    docEqPreviewUrl=null;
+  }
+
+  $('#docEqImage').value='';
+  $('#docEqPreview').removeAttribute('src');
+  $('#docEqPreviewWrap').classList.add('hidden');
+
+  $('#docEqProvider').value='';
+  $('#docEqConcept').value='';
+  $('#docEqValue').value='';
+  $('#docEqReference').value='';
+  $('#docEqCategory').value='';
+  $('#docEqPayment').value='TRANSFERENCIA';
+}
+
+function previewDocEqImage(){
+  const file=$('#docEqImage').files?.[0];
+
+  if(docEqPreviewUrl){
+    URL.revokeObjectURL(docEqPreviewUrl);
+    docEqPreviewUrl=null;
+  }
+
+  if(!file){
+    $('#docEqPreviewWrap').classList.add('hidden');
+    return;
+  }
+
+  docEqPreviewUrl=URL.createObjectURL(file);
+  $('#docEqPreview').src=docEqPreviewUrl;
+  $('#docEqPreviewWrap').classList.remove('hidden');
+}
+
+async function saveDocEq(){
+  const fecha=$('#docEqDate').value;
+  const proveedor=$('#docEqProvider').value.trim();
+  const concepto=$('#docEqConcept').value.trim();
+  const valor=Number($('#docEqValue').value||0);
+  const referencia=$('#docEqReference').value.trim()||null;
+  const categoria=$('#docEqCategory').value||null;
+  const medio_pago=$('#docEqPayment').value||'TRANSFERENCIA';
+
+  if(!fecha || !proveedor || !concepto || !valor){
+    alert('Completa fecha, proveedor, concepto y valor.');
+    return;
+  }
+
+  const button=$('#saveDocEq');
+  button.disabled=true;
+  button.textContent='Guardando...';
+
+  const {error}=await db
+    .from('docs_equivalentes_revision')
+    .insert({
+      fecha,
+      proveedor,
+      concepto,
+      valor,
+      referencia,
+      categoria,
+      medio_pago,
+      estado:'PENDIENTE'
+    });
+
+  button.disabled=false;
+  button.textContent='Guardar en revisión';
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  closeDocEqModal();
+  await loadDocsEq();
+}
+
+let docEqImportId=null;
+
+function importDocEq(id){
+  const row=docsEq.find(x=>String(x.id)===String(id));
+
+  if(!row){
+    alert('No pude localizar este documento en la bandeja. Recarga la página e inténtalo otra vez.');
+    return false;
+  }
+
+  const modal=document.getElementById('docEqImportModal');
+  if(!modal){
+    alert('La ventana de importación no está disponible. Recarga el portal.');
+    return false;
+  }
+
+  docEqImportId=row.id;
+
+  const provider=document.getElementById('docEqImportProvider');
+  const concept=document.getElementById('docEqImportConcept');
+  const category=document.getElementById('docEqImportCategory');
+
+  provider.value=row.proveedor||'';
+  concept.value=
+    String(row.concepto||'').trim().toUpperCase()==='POR DEFINIR'
+      ? ''
+      : (row.concepto||'');
+  category.value=row.categoria||'';
+
+  const dateEl=document.getElementById('docEqImportDate');
+  const valueEl=document.getElementById('docEqImportValue');
+  const refEl=document.getElementById('docEqImportReference');
+
+  if(dateEl)dateEl.textContent=formatDate(row.fecha);
+  if(valueEl)valueEl.textContent=money(row.valor);
+  if(refEl)refEl.textContent=row.referencia||'Sin referencia';
+
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+
+  setTimeout(()=>{
+    provider.focus();
+    provider.select();
+  },30);
+
+  return false;
+}
+
+function closeDocEqImportModal(){
+  docEqImportId=null;
+  const modal=document.getElementById('docEqImportModal');
+  if(modal){
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden','true');
+  }
+  document.body.classList.remove('modal-open');
+  return false;
+}
+
+async function confirmImportDocEq(){
+  const id=docEqImportId;
+  if(!id)return;
+  const proveedor=$('#docEqImportProvider').value.trim();
+  const concepto=$('#docEqImportConcept').value.trim();
+  const categoria=$('#docEqImportCategory').value;
+  if(!proveedor || !concepto || !categoria){
+    alert('Completa proveedor, concepto y categoría.');
+    return;
+  }
+  const btn=$('#confirmDocEqImport');
+  btn.disabled=true;
+  btn.textContent='Importando...';
+
+  try{
+    const {error}=await db.rpc('importar_doc_equivalente',{
+      p_doc_id:id,
+      p_categoria:categoria,
+      p_proveedor:proveedor,
+      p_concepto:concepto
+    });
+
+    if(error)throw error;
+
+    closeDocEqImportModal();
+    await Promise.all([loadDocsEq(),loadExpenses()]);
+  }catch(error){
+    console.error('Error importando Doc Eq:',error);
+    alert('No se pudo importar el gasto: '+(error?.message||error));
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Importar gasto';
+  }
+}
+
+async function ignoreDocEq(id){
+  if(!confirm('¿Ignorar este documento equivalente?'))return;
+
+  const {error}=await db
+    .from('docs_equivalentes_revision')
+    .update({estado:'IGNORADO',updated_at:new Date().toISOString()})
+    .eq('id',id)
+    .eq('estado','PENDIENTE');
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await loadDocsEq();
+}
+
+function showDocsEq(){
+  hideViews();
+  scrollAdminTop();
+  $('#docsEqView').classList.remove('hidden');
+  $('#docsEqNav').classList.add('active');
+  loadDocsEq().finally(()=>{
+    requestAnimationFrame(scrollAdminTop);
+  });
+}
+
+function showInvoices(){
+  hideViews();
+  scrollAdminTop();
+  $('#invoicesView').classList.remove('hidden');
+  $('#invoicesNav').classList.add('active');
+  renderReceivedInvoices();
+}
+
+function populateFilters(){
+  const categories=[...new Set(
+    expenses.map(x=>norm(x.categoria)).filter(Boolean)
+  )].sort();
+
+  const validDates=expenses
+    .map(x=>String(x.fecha||'').slice(0,10))
+    .filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))
+    .sort();
+
+  const firstDate=validDates[0]||'';
+  const lastDate=validDates[validDates.length-1]||'';
+
+  if(!sharedFilters.from)sharedFilters.from=firstDate;
+  if(!sharedFilters.to)sharedFilters.to=lastDate;
+
+  for(const id of ['expenseCategoryFilter','dashboardCategory']){
+    const el=$('#'+id);
+    if(!el)continue;
+    el.innerHTML='<option value="">Todas</option>'+
+      categories.map(c=>`<option>${esc(c)}</option>`).join('');
+    el.value=categories.includes(sharedFilters.category)?sharedFilters.category:'';
+  }
+
+  for(const id of ['expenseDateFrom','dashboardDateFrom']){
+    const el=$('#'+id);
+    if(!el)continue;
+    el.value=sharedFilters.from;
+    el.min=firstDate;
+    el.max=lastDate;
+  }
+
+  for(const id of ['expenseDateTo','dashboardDateTo']){
+    const el=$('#'+id);
+    if(!el)continue;
+    el.value=sharedFilters.to;
+    el.min=firstDate;
+    el.max=lastDate;
+  }
+}
+
+function setSharedFilters({from,to,category}={}){
+  if(from!==undefined)sharedFilters.from=from||'';
+  if(to!==undefined)sharedFilters.to=to||'';
+  if(category!==undefined)sharedFilters.category=category||'';
+
+  // Keep both tabs synchronized visually.
+  const values={
+    expenseDateFrom:sharedFilters.from,
+    dashboardDateFrom:sharedFilters.from,
+    expenseDateTo:sharedFilters.to,
+    dashboardDateTo:sharedFilters.to,
+    expenseCategoryFilter:sharedFilters.category,
+    dashboardCategory:sharedFilters.category
+  };
+
+  Object.entries(values).forEach(([id,value])=>{
+    const el=$('#'+id);
+    if(el)el.value=value;
+  });
+
+  renderExpenses();
+  renderDashboard();
+}
+
+function resetSharedFilters(){
+  const validDates=expenses
+    .map(x=>String(x.fecha||'').slice(0,10))
+    .filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))
+    .sort();
+
+  setSharedFilters({
+    from:validDates[0]||'',
+    to:validDates[validDates.length-1]||'',
+    category:''
+  });
+}
+
+function filteredExpenses(){
+  const q=norm($('#expenseSearch')?.value||'');
+  const {from,to,category}=sharedFilters;
+
+  return expenses.filter(x=>{
+    const date=String(x.fecha||'').slice(0,10);
+    const text=norm(`${x.tipo_documento} ${x.nit_emisor} ${x.nombre_emisor} ${x.proveedor} ${x.numero_factura} ${x.descripcion} ${x.concepto} ${x.observaciones} ${x.categoria} ${x.medio_pago}`);
+
+    return (!q||text.includes(q)) &&
+      (!category||norm(x.categoria)===norm(category)) &&
+      (!from||!date||date>=from) &&
+      (!to||!date||date<=to);
+  });
+}
+
+const EXPENSE_CATEGORIES=[
+  'ADMINISTRATIVO',
+  'ARRIENDO',
+  'EQUIPOS',
+  'IMPUESTOS',
+  'MATERIA PRIMA',
+  'MOLDES',
+  'NO DATA',
+  'NOMINA EMPLEADOS',
+  'OPERACIÓN',
+  'PRESTAMO EMPLEADOS',
+  'PUBLICIDAD',
+  'TRANSPORTE',
+  'UTILIDAD',
+  'VIATICOS'
+];
+
+let inlineExpenseEditingId=null;
+
+function expenseCategoryOptions(selected){
+  const current=String(selected||'NO DATA').toUpperCase();
+  return EXPENSE_CATEGORIES.map(c=>
+    `<option value="${esc(c)}" ${c===current?'selected':''}>${esc(c)}</option>`
+  ).join('');
+}
+
+function expenseTypeOptions(selected){
+  const values=['Factura electrónica','Documento Equivalente','Nota Crédito'];
+  const current=String(selected||'Factura electrónica');
+  return values.map(v=>
+    `<option value="${esc(v)}" ${v===current?'selected':''}>${esc(v)}</option>`
+  ).join('');
+}
+
+function renderExpenseDisplayRow(x){
+  return `<tr class="expense-row" data-expense-id="${x.id}" title="Doble clic para editar">
+    <td>${formatDate(x.fecha)}</td>
+    <td>${esc(x.tipo_documento||'—')}</td>
+    <td>${esc(x.nit_emisor||'—')}</td>
+    <td><strong>${esc(x.nombre_emisor||'—')}</strong></td>
+    <td>${esc(x.descripcion||'—')}</td>
+    <td><span class="badge">${esc(x.categoria||'—')}</span></td>
+    <td><span class="badge ${x.pagado?'paid-badge':'pending-badge'}">${x.pagado?'PAGADO':'CURSADO'}</span></td>
+    <td class="money">${money(x.iva)}</td>
+    <td class="money"><strong>${money(x.total)}</strong></td>
+    <td><button type="button" class="btn danger" data-delete-expense="${x.id}">Eliminar</button></td>
+  </tr>`;
+}
+
+function renderExpenseEditRow(x){
+  return `<tr class="expense-row expense-row-editing" data-expense-id="${x.id}">
+    <td><input class="inline-expense-input inline-date" data-inline="fecha" type="date" value="${esc(String(x.fecha||'').slice(0,10))}"></td>
+    <td><select class="inline-expense-input" data-inline="tipo_documento">${expenseTypeOptions(x.tipo_documento)}</select></td>
+    <td><input class="inline-expense-input inline-nit" data-inline="nit_emisor" type="text" value="${esc(x.nit_emisor||'')}"></td>
+    <td><input class="inline-expense-input inline-provider" data-inline="nombre_emisor" type="text" value="${esc(x.nombre_emisor||'')}"></td>
+    <td><textarea class="inline-expense-input inline-description" data-inline="descripcion" rows="2">${esc(x.descripcion||'')}</textarea></td>
+    <td><select class="inline-expense-input" data-inline="categoria">${expenseCategoryOptions(x.categoria)}</select></td>
+    <td>
+      <select class="inline-expense-input inline-status" data-inline="pagado">
+        <option value="false" ${x.pagado!==true?'selected':''}>CURSADO</option>
+        <option value="true" ${x.pagado===true?'selected':''}>PAGADO</option>
+      </select>
+    </td>
+    <td><input class="inline-expense-input inline-number" data-inline="iva" type="number" step="0.01" value="${Number(x.iva||0)}"></td>
+    <td><input class="inline-expense-input inline-number" data-inline="total" type="number" step="0.01" value="${Number(x.total||0)}"></td>
+    <td>
+      <div class="inline-expense-actions">
+        <button type="button" class="btn primary" data-save-inline-expense="${x.id}">Guardar</button>
+        <button type="button" class="btn secondary" data-cancel-inline-expense="${x.id}">Cancelar</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+function beginInlineExpenseEdit(id){
+  inlineExpenseEditingId=String(id);
+  renderExpenses();
+
+  requestAnimationFrame(()=>{
+    const row=document.querySelector(`.expense-row-editing[data-expense-id="${CSS.escape(String(id))}"]`);
+    const first=row?.querySelector('input,select,textarea');
+    if(first)first.focus();
+  });
+}
+
+function cancelInlineExpenseEdit(){
+  inlineExpenseEditingId=null;
+  renderExpenses();
+}
+
+async function saveInlineExpense(id){
+  const row=document.querySelector(`.expense-row-editing[data-expense-id="${CSS.escape(String(id))}"]`);
+  if(!row)return;
+
+  const get=name=>row.querySelector(`[data-inline="${name}"]`);
+  const payload={
+    fecha:get('fecha')?.value||null,
+    tipo_documento:get('tipo_documento')?.value||null,
+    nit_emisor:get('nit_emisor')?.value.trim()||null,
+    nombre_emisor:get('nombre_emisor')?.value.trim()||null,
+    descripcion:get('descripcion')?.value.trim()||null,
+    categoria:(get('categoria')?.value||'NO DATA').toUpperCase(),
+    pagado:get('pagado')?.value==='true',
+    iva:Number(get('iva')?.value||0),
+    total:Number(get('total')?.value||0)
+  };
+
+  payload.proveedor=payload.nombre_emisor;
+  payload.concepto=payload.descripcion||payload.tipo_documento||'Egreso';
+  payload.valor=payload.total;
+
+  if(!payload.fecha){
+    alert('La fecha es obligatoria.');
+    return;
+  }
+
+  const saveBtn=row.querySelector('[data-save-inline-expense]');
+  if(saveBtn){
+    saveBtn.disabled=true;
+    saveBtn.textContent='Guardando...';
+  }
+
+  const {error}=await db
+    .from('gastos_admin')
+    .update(payload)
+    .eq('id',id);
+
+  if(error){
+    if(saveBtn){
+      saveBtn.disabled=false;
+      saveBtn.textContent='Guardar';
+    }
+    alert(error.message);
+    return;
+  }
+
+  const local=expenses.find(x=>String(x.id)===String(id));
+  if(local)Object.assign(local,payload);
+
+  inlineExpenseEditingId=null;
+  renderExpenses();
+  renderDashboard();
+}
+
+function renderExpenses(){
+  const rows=filteredExpenses();
+  const total=rows.reduce((s,x)=>s+Number(x.total||0),0);
+
+  const historyLabel=$('#expenseHistoryLabel');
+  if(historyLabel){
+    historyLabel.textContent=`${expenses.length.toLocaleString('es-CO')} egresos cargados en el histórico.`;
+  }
+
+  const iva=rows.reduce((s,x)=>s+Number(x.iva||0),0);
+  const paidTotal=rows.filter(x=>x.pagado===true).reduce((s,x)=>s+Number(x.total||0),0);
+  const coursedTotal=rows.filter(x=>x.pagado!==true).reduce((s,x)=>s+Number(x.total||0),0);
+  const issuers=new Set(rows.map(x=>x.nombre_emisor).filter(Boolean)).size;
+
+  $('#expenseKpis').innerHTML=`
+    <div class="kpi"><small>Total egresos</small><strong>${money(total)}</strong></div>
+    <div class="kpi"><small>Pagado</small><strong>${money(paidTotal)}</strong></div>
+    <div class="kpi"><small>Cursado</small><strong>${money(coursedTotal)}</strong></div>
+    <div class="kpi"><small>IVA</small><strong>${money(iva)}</strong></div>
+    <div class="kpi"><small>Documentos</small><strong>${rows.length}</strong></div>
+    <div class="kpi"><small>Emisores</small><strong>${issuers}</strong></div>`;
+
+  $('#expensesList').innerHTML=rows.length?`<div class="list-wrap"><table>
+    <thead><tr>
+      <th>Fecha</th><th>Tipo documento</th><th>NIT</th><th>Nombre Emisor</th>
+      <th>Descripción</th><th>Categoría</th><th>Estado</th><th>IVA</th><th>Total</th><th></th>
+    </tr></thead>
+    <tbody>${rows.map(x=>
+      String(x.id)===String(inlineExpenseEditingId)
+        ?renderExpenseEditRow(x)
+        :renderExpenseDisplayRow(x)
+    ).join('')}</tbody>
+  </table></div>`:'<div class="empty">No hay egresos para estos filtros.</div>';
+
+  document.querySelectorAll('[data-delete-expense]').forEach(button=>{
+    button.onclick=async event=>{
+      event.stopPropagation();
+      if(!confirm('¿Eliminar este egreso?'))return;
+      const {error}=await db.from('gastos_admin').delete().eq('id',button.dataset.deleteExpense);
+      if(error){alert(error.message);return}
+      if(String(inlineExpenseEditingId)===String(button.dataset.deleteExpense)){
+        inlineExpenseEditingId=null;
+      }
+      await loadExpenses();
+    };
+  });
+
+  document.querySelectorAll('.expense-row:not(.expense-row-editing)').forEach(row=>{
+    row.ondblclick=event=>{
+      if(event.target.closest('button'))return;
+      beginInlineExpenseEdit(row.dataset.expenseId);
+    };
+  });
+
+  document.querySelectorAll('[data-save-inline-expense]').forEach(button=>{
+    button.onclick=event=>{
+      event.stopPropagation();
+      saveInlineExpense(button.dataset.saveInlineExpense);
+    };
+  });
+
+  document.querySelectorAll('[data-cancel-inline-expense]').forEach(button=>{
+    button.onclick=event=>{
+      event.stopPropagation();
+      cancelInlineExpenseEdit();
+    };
+  });
+
+  const editingRow=document.querySelector('.expense-row-editing');
+  if(editingRow){
+    editingRow.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){
+        event.preventDefault();
+        cancelInlineExpenseEdit();
+      }
+
+      if(event.key==='Enter' && !event.shiftKey && event.target.tagName!=='TEXTAREA'){
+        event.preventDefault();
+        saveInlineExpense(editingRow.dataset.expenseId);
+      }
+    });
+  }
+}
+
+function dashboardRows(){
+  const {from,to,category}=sharedFilters;
+
+  return expenses.filter(x=>{
+    const date=String(x.fecha||'').slice(0,10);
+
+    return (!category||norm(x.categoria)===norm(category)) &&
+      (!from||!date||date>=from) &&
+      (!to||!date||date<=to);
+  });
+}
+
+function monthRangeFromDates(from,to){
+  if(!from||!to||from>to)return[];
+
+  const start=new Date(from+'T12:00:00');
+  const end=new Date(to+'T12:00:00');
+
+  const result=[];
+  let year=start.getFullYear();
+  let month=start.getMonth()+1;
+  const endYear=end.getFullYear();
+  const endMonth=end.getMonth()+1;
+
+  while(year<endYear || (year===endYear&&month<=endMonth)){
+    result.push(`${year}-${String(month).padStart(2,'0')}`);
+    month++;
+    if(month===13){month=1;year++}
+  }
+  return result;
+}
+
+function formatFullDate(value){
+  if(!value)return'';
+  const [y,m,d]=value.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function renderDashboard(){
+  const rows=dashboardRows();
+  const {from,to,category}=sharedFilters;
+
+  const total=rows.reduce((sum,x)=>sum+Number(x.total||0),0);
+  const iva=rows.reduce((sum,x)=>sum+Number(x.iva||0),0);
+  const paidTotal=rows.filter(x=>x.pagado===true).reduce((sum,x)=>sum+Number(x.total||0),0);
+  const coursedTotal=rows.filter(x=>x.pagado!==true).reduce((sum,x)=>sum+Number(x.total||0),0);
+  const issuers=new Set(rows.map(x=>x.nombre_emisor).filter(Boolean)).size;
+
+  const months=monthRangeFromDates(from,to);
+  const monthCount=Math.max(1,months.length);
+  const monthlyAverage=total/monthCount;
+
+  $('#dashboardKpis').innerHTML=`
+    <div class="kpi"><small>Egresos periodo</small><strong>${money(total)}</strong></div>
+    <div class="kpi"><small>Pagado</small><strong>${money(paidTotal)}</strong></div>
+    <div class="kpi"><small>Cursado</small><strong>${money(coursedTotal)}</strong></div>
+    <div class="kpi"><small>IVA periodo</small><strong>${money(iva)}</strong></div>
+    <div class="kpi"><small>Promedio mensual</small><strong>${money(monthlyAverage)}</strong></div>
+    <div class="kpi"><small>Emisores</small><strong>${issuers}</strong></div>`;
+
+  const grouped={};
+
+  rows.forEach(x=>{
+    const name=x.categoria||'Sin categoría';
+    grouped[name]=(grouped[name]||0)+Number(x.total||0);
+  });
+
+  const chartRows=Object.entries(grouped)
+    .map(([name,totalValue])=>({
+      name,
+      total:totalValue,
+      average:totalValue/monthCount
+    }))
+    .sort((a,b)=>b.total-a.total);
+
+  const max=Math.max(1,...chartRows.map(x=>x.total));
+
+  $('#expenseChartTitle').textContent='Gastos por categoría';
+
+  const periodText=from&&to
+    ?`${formatFullDate(from)} — ${formatFullDate(to)}`
+    :'Todo el histórico';
+
+  $('#expenseChartPeriod').textContent=
+    `${periodText}${category?' · '+category:''}`;
+
+  $('#categoryChart').innerHTML=chartRows.length
+    ?chartRows.map(row=>`
+      <div class="chart-row consolidated-chart-row">
+        <span>${esc(row.name)}</span>
+        <div class="bar"><i style="width:${row.total/max*100}%"></i></div>
+        <div class="chart-values">
+          <strong class="money">${money(row.total)}</strong>
+          <small>Prom. mes ${money(row.average)}</small>
+        </div>
+      </div>`).join('')
+    :'<div class="empty">Sin egresos para estos filtros.</div>';
+}
+
+
+function scrollAdminTop(){
+  window.scrollTo({top:0,left:0,behavior:'auto'});
+  document.documentElement.scrollTop=0;
+  document.body.scrollTop=0;
+}
+
+function hideViews(){
+  $('#dashboardView').classList.add('hidden');
+  $('#expensesView').classList.add('hidden');
+  $('#invoicesView').classList.add('hidden');
+  $('#dashboardNav').classList.remove('active');
+  $('#expensesNav').classList.remove('active');
+  $('#invoicesNav').classList.remove('active');
+  $('#docsEqNav').classList.remove('active');
+}
+function showDashboard(){
+  hideViews();
+  scrollAdminTop();
+  $('#dashboardView').classList.remove('hidden');
+  $('#dashboardNav').classList.add('active');
+  renderDashboard();
+}
+function showExpenses(){
+  hideViews();
+  scrollAdminTop();
+  $('#expensesView').classList.remove('hidden');
+  $('#expensesNav').classList.add('active');
+  renderExpenses();
+}
+
+function openExpenseForEdit(expense){
+  editingExpenseId=expense.id;
+
+  $('#expenseDocumentType').value=expense.tipo_documento||'Factura electrónica';
+  $('#expenseDate').value=String(expense.fecha||'').slice(0,10);
+  $('#expenseNit').value=expense.nit_emisor||'';
+  $('#expenseIssuer').value=expense.nombre_emisor||'';
+  $('#expenseDescription').value=expense.descripcion||'';
+  $('#expenseIva').value=Number(expense.iva||0);
+  $('#expenseTotal').value=Number(expense.total||0);
+  $('#expensePaid').checked=expense.pagado===true;
+
+  const category=String(expense.categoria||'').toUpperCase();
+  const select=$('#expenseCategory');
+  const option=[...select.options].find(opt=>String(opt.value).toUpperCase()===category);
+  if(option)select.value=option.value;
+
+  $('#saveExpense').classList.add('hidden');
+  $('#expenseSaveState').textContent='✓ Los cambios se guardan automáticamente.';
+  $('#expenseForm').classList.remove('hidden');
+
+  requestAnimationFrame(()=>{
+    $('#expenseForm').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+}
+
+function clearExpenseForm(){
+  $('#expenseDocumentType').value='Factura electrónica';
+  $('#expenseDate').value=new Date().toISOString().slice(0,10);
+  $('#expenseNit').value='';
+  $('#expenseIssuer').value='';
+  $('#expenseDescription').value='';
+  $('#expenseIva').value='0';
+  $('#expenseTotal').value='';
+  $('#expensePaid').checked=false;
+  if($('#expenseCategory').options.length)$('#expenseCategory').selectedIndex=0;
+  editingExpenseId=null;
+  clearTimeout(expenseAutosaveTimer);
+  expenseAutosaveBusy=false;
+  expenseAutosaveQueued=false;
+  if($('#saveExpense')){
+    $('#saveExpense').textContent='Guardar gasto';
+    $('#saveExpense').classList.remove('hidden');
+  }
+  if($('#expenseSaveState'))$('#expenseSaveState').textContent='Nuevo gasto: usa Guardar gasto.';
+}
+
+
+function currentExpensePayload(){
+  return{
+    tipo_documento:$('#expenseDocumentType').value.trim()||null,
+    fecha:$('#expenseDate').value||null,
+    nit_emisor:$('#expenseNit').value.trim()||null,
+    nombre_emisor:$('#expenseIssuer').value.trim()||null,
+    descripcion:$('#expenseDescription').value.trim()||null,
+    iva:Number($('#expenseIva').value||0),
+    total:Number($('#expenseTotal').value||0),
+    categoria:$('#expenseCategory').value.trim().toUpperCase()||'NO DATA',
+    pagado:$('#expensePaid').checked
+  };
+}
+
+async function saveExpenseAutomatically(){
+  if(!editingExpenseId)return;
+
+  if(expenseAutosaveBusy){
+    expenseAutosaveQueued=true;
+    return;
+  }
+
+  const payload=currentExpensePayload();
+  payload.proveedor=payload.nombre_emisor;
+  payload.concepto=payload.descripcion||payload.tipo_documento||'Egreso';
+  payload.valor=payload.total;
+
+  expenseAutosaveBusy=true;
+  const state=$('#expenseSaveState');
+  state.textContent='Guardando cambios...';
+
+  const {error}=await db
+    .from('gastos_admin')
+    .update(payload)
+    .eq('id',editingExpenseId);
+
+  expenseAutosaveBusy=false;
+
+  if(error){
+    console.error(error);
+    state.textContent='Error al guardar: '+error.message;
+  }else{
+    const local=expenses.find(x=>x.id===editingExpenseId);
+    if(local)Object.assign(local,payload);
+    state.textContent='✓ Guardado automáticamente';
+    renderExpenses();
+    renderDashboard();
+  }
+
+  if(expenseAutosaveQueued){
+    expenseAutosaveQueued=false;
+    saveExpenseAutomatically();
+  }
+}
+
+function scheduleExpenseAutosave(){
+  if(!editingExpenseId)return;
+
+  clearTimeout(expenseAutosaveTimer);
+  const state=$('#expenseSaveState');
+  state.textContent='Cambios pendientes...';
+
+  expenseAutosaveTimer=setTimeout(saveExpenseAutomatically,600);
+}
+
+async function saveExpense(){
+  const payload=currentExpensePayload();
+
+  if(!payload.fecha||!payload.nombre_emisor||payload.total<=0){
+    alert('Completa fecha, nombre del emisor y un total mayor que 0.');
+    return;
+  }
+
+  // Mirror legacy fields so previous logic/integrations stay compatible.
+  payload.proveedor=payload.nombre_emisor;
+  payload.concepto=payload.descripcion||payload.tipo_documento||'Egreso';
+  payload.valor=payload.total;
+
+  const keyText=[
+    payload.tipo_documento,payload.fecha,payload.nit_emisor,payload.nombre_emisor,
+    payload.descripcion,payload.iva.toFixed(2),payload.total.toFixed(2),payload.categoria,
+    String(Date.now())
+  ].join('|');
+  payload.source_key='manual-'+btoa(unescape(encodeURIComponent(keyText))).slice(0,50).replace(/[^a-zA-Z0-9]/g,'');
+
+  const btn=$('#saveExpense');
+  btn.disabled=true;
+  btn.textContent=editingExpenseId?'Guardando cambios...':'Guardando...';
+
+  let error=null;
+
+  if(editingExpenseId){
+    await saveExpenseAutomatically();
+    btn.disabled=false;
+    return;
+  }else{
+    ({error}=await db
+      .from('gastos_admin')
+      .insert(payload));
+  }
+
+  btn.disabled=false;
+
+  if(error){
+    btn.textContent='Guardar gasto';
+    alert(error.message);
+    return;
+  }
+
+  $('#expenseForm').classList.add('hidden');
+  clearExpenseForm();
+  await loadExpenses();
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  const btn=e.currentTarget.querySelector('button');
+  btn.disabled=true;btn.textContent='INGRESANDO...';$('#loginError').textContent='';
+  try{
+    const {data,error}=await db.auth.signInWithPassword({
+      email:$('#loginUser').value.trim().toLowerCase(),
+      password:$('#loginPassword').value
+    });
+    if(error)throw error;
+    showAuthenticated(data.user||data.session?.user);
+  }catch(error){
+    $('#loginError').textContent=String(error?.message||error);
+  }finally{
+    btn.disabled=false;btn.textContent='INGRESAR';
+  }
+}
+function showAuthenticated(user){
+  $('#loginScreen').classList.add('hidden');
+  $('#userName').textContent=user?.email||'Usuario';
+  Promise.all([loadExpenses(),loadReceivedInvoices()]).catch(error=>alert(error.message));
+}
+function showLogin(){
+  $('#loginScreen').classList.remove('hidden');
+}
+async function logout(){await db.auth.signOut();showLogin()}
+
+async function init(){
+  $('#loginForm').onsubmit=handleLogin;
+  $('#logoutButton').onclick=logout;
+  $('#dashboardNav').onclick=showDashboard;
+  $('#expensesNav').onclick=showExpenses;
+  $('#invoicesNav').onclick=showInvoices;
+  $('#docsEqNav').onclick=showDocsEq;
+  $('#newExpense').onclick=()=>{clearExpenseForm();$('#expenseForm').classList.remove('hidden')};
+  $('#cancelExpense').onclick=()=>{
+    $('#expenseForm').classList.add('hidden');
+    clearExpenseForm();
+  };
+  $('#saveExpense').onclick=saveExpense;
+
+  document.querySelectorAll(
+    '#expenseForm input,#expenseForm select'
+  ).forEach(input=>{
+    input.addEventListener(
+      input.tagName==='SELECT'||input.type==='checkbox'?'change':'input',
+      scheduleExpenseAutosave
+    );
+  });
+  $('#expenseSearch').oninput=renderExpenses;
+  $('#invoiceSearch').oninput=renderReceivedInvoices;
+  $('#invoiceStatusFilter').onchange=renderReceivedInvoices;
+  if($('#newDocEqBtn')) $('#newDocEqBtn').onclick=openDocEqModal;
+  if($('#closeDocEqModal')) $('#closeDocEqModal').onclick=closeDocEqModal;
+  if($('#cancelDocEq')) $('#cancelDocEq').onclick=closeDocEqModal;
+  if($('#saveDocEq')) $('#saveDocEq').onclick=saveDocEq;
+  if($('#docEqImage')) $('#docEqImage').onchange=previewDocEqImage;
+  document.querySelectorAll('[data-close-doc-eq]').forEach(el=>el.onclick=closeDocEqModal);
+  if($('#closeDocEqImportModal')) $('#closeDocEqImportModal').onclick=closeDocEqImportModal;
+  if($('#cancelDocEqImport')) $('#cancelDocEqImport').onclick=closeDocEqImportModal;
+  if($('#confirmDocEqImport')) $('#confirmDocEqImport').onclick=confirmImportDocEq;
+  document.querySelectorAll('[data-close-doc-eq-import]').forEach(el=>el.onclick=closeDocEqImportModal);
+
+  if($('#docsEqFrom')) $('#docsEqFrom').onchange=renderDocsEq;
+  if($('#docsEqTo')) $('#docsEqTo').onchange=renderDocsEq;
+  if($('#docsEqStatus')) $('#docsEqStatus').onchange=renderDocsEq;
+  if($('#docsEqSearch')) $('#docsEqSearch').oninput=renderDocsEq;
+
+  // Acciones Docs Eq enlazadas directamente en cada botón.
+
+  $('#closeInvoiceImport').onclick=closeInvoiceImportModal;
+  $('#cancelInvoiceImport').onclick=closeInvoiceImportModal;
+  $('#confirmInvoiceImport').onclick=confirmInvoiceImport;
+  $('#bulkImportCategorized').onclick=bulkImportCategorizedInvoices;
+  document.querySelectorAll('[data-close-invoice-modal]').forEach(el=>el.onclick=closeInvoiceImportModal);
+
+  const syncFromExpense=()=>{
+    setSharedFilters({
+      from:$('#expenseDateFrom').value,
+      to:$('#expenseDateTo').value,
+      category:$('#expenseCategoryFilter').value
+    });
+  };
+
+  const syncFromDashboard=()=>{
+    setSharedFilters({
+      from:$('#dashboardDateFrom').value,
+      to:$('#dashboardDateTo').value,
+      category:$('#dashboardCategory').value
+    });
+  };
+
+  $('#expenseDateFrom').onchange=syncFromExpense;
+  $('#expenseDateTo').onchange=syncFromExpense;
+  $('#expenseCategoryFilter').onchange=syncFromExpense;
+
+  $('#dashboardDateFrom').onchange=syncFromDashboard;
+  $('#dashboardDateTo').onchange=syncFromDashboard;
+  $('#dashboardCategory').onchange=syncFromDashboard;
+
+  $('#showAllExpenses').onclick=()=>{
+    $('#expenseSearch').value='';
+    resetSharedFilters();
+  };
+
+  $('#dashboardShowAll').onclick=resetSharedFilters;
+
+  clearExpenseForm();
+
+  const {data}=await db.auth.getSession();
+  if(data?.session?.user)showAuthenticated(data.session.user);
+  else showLogin();
+
+  db.auth.onAuthStateChange((_event,session)=>{
+    if(!session?.user)showLogin();
+  });
+
+  db.channel('admin-estona')
+    .on('postgres_changes',{event:'*',schema:'public',table:'gastos_admin'},()=>loadExpenses().catch(console.error))
+    .on('postgres_changes',{event:'*',schema:'public',table:'facturas_recibidas'},()=>loadReceivedInvoices().catch(console.error))
+    .subscribe();
+}
+init();
+</script>
+
+<div id="docEqModal" class="modal hidden">
+  <div class="modal-backdrop" data-close-doc-eq></div>
+  <section class="modal-card doc-eq-card">
+    <div class="modal-head">
+      <div>
+        <h2>Nuevo Documento Equivalente</h2>
+        <p>El pantallazo sirve solo como referencia durante el registro y no se guarda.</p>
+      </div>
+      <button id="closeDocEqModal" class="icon-btn" type="button">×</button>
+    </div>
+
+    <div class="doc-eq-layout">
+      <div class="doc-eq-preview-panel">
+        <label class="upload-box">
+          <span>Pantallazo de la transacción</span>
+          <input id="docEqImage" type="file" accept="image/*">
+          <small>La imagen permanece únicamente en este navegador mientras llenas el registro.</small>
+        </label>
+        <div id="docEqPreviewWrap" class="doc-eq-preview-wrap hidden">
+          <img id="docEqPreview" alt="Vista previa del comprobante">
+        </div>
+      </div>
+
+      <div class="doc-eq-form">
+        <label><span>Fecha</span><input id="docEqDate" type="date"></label>
+        <label><span>Proveedor / destinatario</span><input id="docEqProvider" type="text"></label>
+        <label class="wide"><span>Concepto</span><input id="docEqConcept" type="text"></label>
+        <label><span>Valor</span><input id="docEqValue" type="number" min="0" step="0.01"></label>
+        <label><span>Referencia</span><input id="docEqReference" type="text"></label>
+        <label><span>Medio de pago</span>
+          <select id="docEqPayment">
+            <option value="TRANSFERENCIA">Transferencia</option>
+            <option value="PSE">PSE</option>
+            <option value="TARJETA">Tarjeta</option>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </label>
+        <label><span>Categoría</span>
+          <select id="docEqCategory">
+            <option value="">Sin categoría</option>
+            <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+            <option value="ARRIENDO">ARRIENDO</option>
+            <option value="EQUIPOS">EQUIPOS</option>
+            <option value="IMPUESTOS">IMPUESTOS</option>
+            <option value="MATERIA PRIMA">MATERIA PRIMA</option>
+            <option value="MOLDES">MOLDES</option>
+            <option>NO DATA</option>
+            <option value="NOMINA EMPLEADOS">NOMINA EMPLEADOS</option>
+            <option value="OPERACIÓN">OPERACIÓN</option>
+            <option value="PRESTAMO EMPLEADOS">PRESTAMO EMPLEADOS</option>
+            <option value="PUBLICIDAD">PUBLICIDAD</option>
+            <option value="TRANSPORTE">TRANSPORTE</option>
+            <option>UTILIDAD</option>
+            <option value="VIATICOS">VIATICOS</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="cancelDocEq" class="btn secondary" type="button">Cancelar</button>
+      <button id="saveDocEq" class="btn primary" type="button">Guardar en revisión</button>
+    </div>
+  </section>
+</div>
+
+<div id="docEqImportModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-backdrop" onclick="closeDocEqImportModal();"></div>
+
+  <section class="modal-card doc-eq-import-card" role="dialog" aria-modal="true" aria-labelledby="docEqImportTitle">
+    <div class="doc-eq-import-head">
+      <div>
+        <span class="eyebrow">DOCUMENTO EQUIVALENTE</span>
+        <h2 id="docEqImportTitle">Revisar antes de importar</h2>
+        <p>Corrige los datos que quieras y luego llévalo a Gastos.</p>
+      </div>
+      <button class="doc-eq-close" type="button" onclick="closeDocEqImportModal();" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="doc-eq-import-summary">
+      <div>
+        <small>Fecha</small>
+        <strong id="docEqImportDate">—</strong>
+      </div>
+      <div>
+        <small>Valor</small>
+        <strong id="docEqImportValue">—</strong>
+      </div>
+      <div class="wide-summary">
+        <small>Referencia</small>
+        <strong id="docEqImportReference">—</strong>
+      </div>
+    </div>
+
+    <div class="doc-eq-import-fields">
+      <label>
+        <span>Proveedor / destinatario</span>
+        <input id="docEqImportProvider" type="text" autocomplete="off" placeholder="Nombre del proveedor">
+      </label>
+
+      <label>
+        <span>Concepto</span>
+        <textarea id="docEqImportConcept" rows="3" placeholder="Ej. Transporte entrega proyecto, compra de material, anticipo..."></textarea>
+      </label>
+
+      <label>
+        <span>Categoría</span>
+        <select id="docEqImportCategory">
+          <option value="">Seleccionar categoría</option>
+          <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+          <option value="ARRIENDO">ARRIENDO</option>
+          <option value="EQUIPOS">EQUIPOS</option>
+          <option value="IMPUESTOS">IMPUESTOS</option>
+          <option value="MATERIA PRIMA">MATERIA PRIMA</option>
+          <option value="MOLDES">MOLDES</option>
+          <option value="NOMINA EMPLEADOS">NOMINA EMPLEADOS</option>
+          <option value="OPERACIÓN">OPERACIÓN</option>
+          <option value="PRESTAMO EMPLEADOS">PRESTAMO EMPLEADOS</option>
+          <option value="PUBLICIDAD">PUBLICIDAD</option>
+          <option value="TRANSPORTE">TRANSPORTE</option>
+          <option>UTILIDAD</option>
+          <option value="VIATICOS">VIATICOS</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="doc-eq-import-actions">
+      <button class="btn secondary" type="button" onclick="closeDocEqImportModal();">Cancelar</button>
+      <button id="confirmDocEqImport" class="btn primary doc-eq-import-submit" type="button" onclick="confirmImportDocEq();">
+        Importar a Gastos
+      </button>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>
