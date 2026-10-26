@@ -1186,7 +1186,7 @@ tbody tr:hover td{
    ============================================================ */
 .analysis-top{margin-bottom:18px!important}
 .analysis-kpis{
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
   margin-bottom:24px!important;
 }
 .analysis-kpi-note{
@@ -1480,10 +1480,18 @@ tbody tr:hover td{
       <header class="top analysis-top">
         <div>
           <h1>Análisis</h1>
-          <p>Producción pendiente vs. recaudo pendiente de los proyectos.</p>
+          <p>Producción pendiente vs. saldo en bancos y recaudo pendiente de los proyectos.</p>
         </div>
         <button id="refreshAnalysis" class="btn secondary" type="button">Actualizar</button>
       </header>
+
+      <section class="filters analysis-filters">
+        <label for="analysisBankBalance">
+          <span>Valor en cuentas (COP)</span>
+          <input id="analysisBankBalance" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-describedby="analysisBankBalanceHelp">
+          <small id="analysisBankBalanceHelp">Saldo disponible en bancos. Se suma a lo pendiente por cobrar y se guarda solo en este navegador.</small>
+        </label>
+      </section>
 
       <section id="analysisKpis" class="kpis analysis-kpis"></section>
 
@@ -1665,8 +1673,12 @@ function renderAnalysis(){
 
   const totalInvest=analysisRows.reduce((sum,row)=>sum+row.por_invertir,0);
   const totalCollect=analysisRows.reduce((sum,row)=>sum+row.por_recaudar,0);
-  const difference=totalCollect-totalInvest;
-  const coverage=totalInvest>0?(totalCollect/totalInvest):0;
+  const bankInput=$('#analysisBankBalance');
+  const bankBalance=bankInput && bankInput.validity.valid && Number.isFinite(bankInput.valueAsNumber)
+    ?bankInput.valueAsNumber:0;
+  const totalAvailable=bankBalance+totalCollect;
+  const difference=totalAvailable-totalInvest;
+  const coverage=totalInvest>0?(totalAvailable/totalInvest):0;
   const activeProduction=analysisRows.filter(row=>row.por_invertir>0).length;
 
   $('#analysisKpis').innerHTML=`
@@ -1681,9 +1693,14 @@ function renderAnalysis(){
       <span class="analysis-kpi-note">CRM · saldo pendiente</span>
     </div>
     <div class="kpi">
+      <small>Disponible para fabricar</small>
+      <strong>${money(totalAvailable)}</strong>
+      <span class="analysis-kpi-note">Cuentas + por recaudar</span>
+    </div>
+    <div class="kpi">
       <small>Diferencia</small>
       <strong class="${difference<0?'analysis-negative':'analysis-positive'}">${money(difference)}</strong>
-      <span class="analysis-kpi-note">Recaudo − inversión</span>
+      <span class="analysis-kpi-note">Cuentas + recaudo − inversión</span>
     </div>
     <div class="kpi">
       <small>Cobertura</small>
@@ -1695,14 +1712,14 @@ function renderAnalysis(){
   const explanation=$('#analysisExplanation');
 
   if(difference>=0){
-    headline.textContent=`El recaudo pendiente cubre la inversión pendiente en ${money(difference)}.`;
+    headline.textContent=`El saldo en cuentas y el recaudo pendiente cubren la inversión pendiente en ${money(difference)}.`;
     explanation.textContent=
       totalInvest>0
-        ?`Por cada $1 pendiente de producción hay ${coverage.toLocaleString('es-CO',{maximumFractionDigits:2})} disponibles por recaudar.`
+        ?`Por cada $1 pendiente de producción hay ${coverage.toLocaleString('es-CO',{maximumFractionDigits:2})} entre saldo en cuentas y recaudo pendiente.`
         :'No hay inversión pendiente calculada en Producción.';
   }else{
     headline.textContent=`Faltan ${money(Math.abs(difference))} para cubrir la inversión pendiente.`;
-    explanation.textContent='La inversión pendiente de Producción supera el saldo que queda por recaudar en CRM.';
+    explanation.textContent='La inversión pendiente de Producción supera la suma del saldo en cuentas y lo pendiente por recaudar en CRM.';
   }
 
   const rows=filteredAnalysisRows();
@@ -3044,6 +3061,29 @@ async function init(){
   if($('#docsEqTo')) $('#docsEqTo').onchange=renderDocsEq;
   if($('#docsEqStatus')) $('#docsEqStatus').onchange=renderDocsEq;
   if($('#docsEqSearch')) $('#docsEqSearch').oninput=renderDocsEq;
+  const bankInput=$('#analysisBankBalance');
+  if(bankInput){
+    const storageKey='admin.analysis.bankBalance';
+    try{
+      const saved=localStorage.getItem(storageKey);
+      if(saved!==null && Number.isFinite(Number(saved)) && Number(saved)>=0){
+        bankInput.value=String(Number(saved));
+      }
+    }catch(error){
+      $('#analysisBankBalanceHelp').textContent='Saldo disponible en bancos. Este navegador no permite guardar el valor.';
+    }
+    bankInput.oninput=()=>{
+      if(bankInput.validity.valid){
+        try{
+          if(bankInput.value==='')localStorage.removeItem(storageKey);
+          else localStorage.setItem(storageKey,bankInput.value);
+        }catch(error){
+          $('#analysisBankBalanceHelp').textContent='El cálculo se actualizó, pero no fue posible guardar el valor en este navegador.';
+        }
+      }
+      renderAnalysis();
+    };
+  }
   if($('#analysisSearch')) $('#analysisSearch').oninput=renderAnalysis;
   if($('#analysisFilter')) $('#analysisFilter').onchange=renderAnalysis;
   if($('#refreshAnalysis')) $('#refreshAnalysis').onclick=()=>loadAnalysis().catch(error=>alert(error.message));
